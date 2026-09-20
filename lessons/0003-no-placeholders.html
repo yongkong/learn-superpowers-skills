@@ -64,7 +64,8 @@
 <p>SKILL.md 里的 <em>No Placeholders</em> 段列了 6 种"plan 失败"，我把它们编号为 <strong>P1–P6</strong>，方便记忆：</p>
 
 <table>
-  <thead><tr><th style="width:5rem">编号</th><th>症状</th><th>为什么致命</th></tr></thead>
+  <colgroup><col class="c-label"><col class="c-wide"><col></colgroup>
+  <thead><tr><th>编号</th><th>症状</th><th>为什么致命</th></tr></thead>
   <tbody>
     <tr><td><strong>P1 · TBD</strong></td><td><code>TBD</code> / <code>TODO</code> / <code>implement later</code> / <code>fill in details</code></td><td>决策成本推给读者 = 没写。</td></tr>
     <tr><td><strong>P2 · 空泛</strong></td><td><code>add appropriate error handling</code> / <code>handle edge cases</code></td><td>"appropriate" 是品味词，零上下文读者无法定义。</td></tr>
@@ -176,7 +177,8 @@ git commit -m "feat(register): add email+password signup with validation"
 <p>SKILL.md 明列这 4 项，<strong>由 plan 作者自己 inline 完成</strong>（不是派 subagent 做）：</p>
 
 <table>
-  <thead><tr><th style="width:11rem">检查</th><th>问什么</th></tr></thead>
+  <colgroup><col class="c-label"><col></colgroup>
+  <thead><tr><th>检查</th><th>问什么</th></tr></thead>
   <tbody>
     <tr><td>① Spec coverage</td><td>spec 里每条要求，能不能指到一个 task？列表化未覆盖项。</td></tr>
     <tr><td>② Placeholder scan</td><td>整份 plan 扫一遍 P1–P6。</td></tr>

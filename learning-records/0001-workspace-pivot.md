@@ -41,6 +41,7 @@
 - [x] 6 课 + 5 份 reference 完成
 - [x] 网站外壳完成，code 层面修掉 3 个会导致 build 失败的问题
 - [x] 推到 GitHub `yongkong/learn-superpowers-skills`
+- [x] Vercel 部署上线：https://learn-superpowers-skills.vercel.app （本地 vercel build 因沙箱 spawn cmd.exe 失败 → 改用手工 Build Output v3 结构 + `vercel deploy --prebuilt`）
 - [ ] 用户跑通 `npm install && npm run dev` 确认本地渲染
 - [ ] 用户选一个部署平台，第一次上线
 - [ ] 团队 demo：拿 30 分钟走 Lesson 0006 里的培训脚本

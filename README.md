@@ -2,6 +2,8 @@
 
 一份关于 [obra/superpowers](https://github.com/obra/superpowers) 的**中文学习 workspace + 可分发网站**。
 
+> 🌐 **在线访问**：https://learn-superpowers-skills.vercel.app
+
 - **6 节课**（每节 12–18 分钟）+ **5 份打印友好 reference**
 - 每一段主张都锚回官方 SKILL.md 一手来源
 - 面向"用过一部分 skill，但没有系统梳理"的开发者

@@ -22,3 +22,6 @@ Thumbs.db
 *.local
 .env
 .env.*.local
+
+# Vercel CLI 临时部署脚本
+.vercel-tmp/

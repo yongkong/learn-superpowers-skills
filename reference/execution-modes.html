@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Reference · 执行模式决策表</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+
+<header class="course-head">
+  <div class="crumbs">
+    <a href="../lessons/0004-execution-mode.html">Lesson 0004</a>
+    · Reference
+  </div>
+  <h1>Subagent vs Native · 决策速查</h1>
+  <p class="subtitle">一手来源：<a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/subagent-driven-development/SKILL.md">subagent-driven-development/SKILL.md</a> + <a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/writing-plans/SKILL.md">writing-plans/SKILL.md 尾部 Execution Handoff</a></p>
+</header>
+
+<h2 data-num="Ⅰ">30 秒对比</h2>
+
+<table>
+  <thead><tr><th></th><th>Subagent-driven-development</th><th>executing-plans (native)</th></tr></thead>
+  <tbody>
+    <tr><td>每 task 由谁实现</td><td>Fresh implementer subagent</td><td>本 session 自己</td></tr>
+    <tr><td>每 task 后评审</td><td>Fresh task-reviewer（spec + 质量两关）</td><td>无</td></tr>
+    <tr><td>分支级评审</td><td>最后再来一次 whole-branch</td><td>最后由更强模型 reviewer 走整枝</td></tr>
+    <tr><td>上下文污染</td><td>免疫（每 task fresh）</td><td>存在（Task N 的判断会影响 N+1）</td></tr>
+    <tr><td>Token 成本</td><td>高（每 task ≥ 2 份 fresh）</td><td>低</td></tr>
+    <tr><td>无人值守时长</td><td>2+ 小时</td><td>受 session 上下文窗口限制</td></tr>
+    <tr><td>恢复机制</td><td>Ledger（<code>progress.md</code>）+ git log</td><td>Session 历史本身</td></tr>
+  </tbody>
+</table>
+
+<h2 data-num="Ⅱ">决策矩阵</h2>
+
+<table>
+  <thead><tr><th>Plan 特征</th><th style="width:6rem">Subagent</th><th style="width:6rem">Native</th></tr></thead>
+  <tbody>
+    <tr><td>Task 数量 ≥ 10</td><td>✓</td><td>勉强</td></tr>
+    <tr><td>Task 数量 ≤ 5 · 独立性高</td><td>过度</td><td>✓</td></tr>
+    <tr><td>Task 间接口复杂 / 依赖强</td><td>✓（Interfaces 块 = 契约）</td><td>—</td></tr>
+    <tr><td>需要无人值守 2+ 小时</td><td>✓</td><td>—</td></tr>
+    <tr><td>出错代价高（生产数据 / 迁移 / 不可逆）</td><td>✓</td><td>—</td></tr>
+    <tr><td>Token 预算紧张</td><td>—</td><td>✓</td></tr>
+    <tr><td>Plan 已经把设计说透 · 中等模型够用</td><td>过度</td><td>✓</td></tr>
+    <tr><td>Spike 式快速验证</td><td>—</td><td>✓</td></tr>
+  </tbody>
+</table>
+
+<h2 data-num="Ⅲ">Subagent 的 4 个"真停下来"条件</h2>
+
+<p>SKILL.md 明列：<em>"Four things stop you, and only these."</em> 除这 4 条外，subagent 遇到任何冲突 / 歧义 / plan 缺陷都应<strong>自己裁决 · 写进台账 · 继续跑</strong>：</p>
+
+<ol>
+  <li><strong>不可逆 / 破坏性操作</strong>（比如 drop table · force-push）</li>
+  <li><strong>安全敏感动作</strong>（比如改权限 · 处理密钥）</li>
+  <li><strong>Worktree 之外的副作用</strong>（merge 到共享分支 · push · publish）</li>
+  <li><strong>Plan 烂到"任何方向都是猜"</strong></li>
+</ol>
+
+<h2 data-num="Ⅳ">Rulings, not stalls · 台账格式</h2>
+
+<p>每次 agent 自己裁决一个冲突，都记入 ledger（<code>progress.md</code>）：</p>
+
+<pre><code>Ruling: &lt;你决定了什么&gt; — &lt;为什么&gt; — &lt;如果错了的代价&gt;</code></pre>
+
+<p>这个"代价"字段很重要 —— 它决定人类回来时是否需要<em>立刻</em>回滚，还是可以让它继续跑完。</p>
+
+<h2 data-num="Ⅴ">Fix Loop（评审没通过时）</h2>
+
+<p>Subagent 的 per-task review 是一个 <strong>5 轮封顶</strong>的循环：</p>
+
+<ul>
+  <li>Round R ≤ 3：<em>恢复</em>原 implementer subagent，让它继续修（保留它的上下文）</li>
+  <li>Round R ≥ 4：换 <strong>更强的 fresh implementer</strong>（因为老的可能就是搞不定）</li>
+  <li>Round 5 结束还有 open findings：<em>逐条裁决</em>（adjudicate）。承重问题（load-bearing）→ 停下；其他 → park 进台账继续。</li>
+</ul>
+
+<h2 data-num="Ⅵ">Ledger 与恢复</h2>
+
+<div class="callout warn">
+  <div class="callout-label">Compaction 之后</div>
+  <p>Session compact 之后，<strong>相信 <code>progress.md</code> 和 <code>git log</code>，而不是相信 agent 自己的记忆</strong>。<br>
+  台账第一行 <code># SDD ledger — plan: &lt;plan file path&gt;</code> 是身份标识 —— 如果它指向的是别的 plan，<em>不要</em>读它的进度，另起一份。</p>
+</div>
+
+<h2 data-num="Ⅶ">什么时候混合用</h2>
+
+<p>官方没有明说 "mixed mode"。但一个常见的实用策略：</p>
+
+<ul>
+  <li><strong>前期 3-5 个"骨架 task"</strong>：用 subagent · 因为接口设计定生死</li>
+  <li><strong>后期"重复性" task</strong>（比如给 20 个 model 都加一样的 validator）：切 native · 因为每个 task 判断都类似，污染风险低</li>
+</ul>
+
+<p>这个策略需要你在 Step 4 中途切档 —— 记得让 agent 明说"前 5 个 task 用 subagent，后面切 native"，写进 plan 尾部。</p>
+
+<footer class="course-foot">
+  <div class="next-steps">
+    <h4>Source of truth</h4>
+    <p>本表内容回溯至：<a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/subagent-driven-development/SKILL.md">subagent-driven-development/SKILL.md</a>、<a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/writing-plans/SKILL.md">writing-plans/SKILL.md 尾部 Execution Handoff 段</a>。</p>
+  </div>
+</footer>
+
+</body>
+</html>

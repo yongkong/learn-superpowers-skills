@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Lesson 0004 · Subagent vs Native</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+
+<header class="course-head">
+  <div class="crumbs">
+    Superpowers · Lesson 0004 · 约 14 分钟 · <a href="./0003-no-placeholders.html">← 上一课</a>
+  </div>
+  <h1>执行模式岔路：Subagent-driven vs Native</h1>
+  <p class="subtitle">"能不能让 agent 无人值守跑两小时" —— 答案不在模型多强，在你 plan 写得多具体 + 选了哪种执行模式。</p>
+</header>
+
+<h2 data-num="Ⅰ">为什么这是最重要的一课</h2>
+
+<div class="callout">
+  <div class="callout-label">Mission tie-in</div>
+  <p><strong>使命 A</strong>：你想把小产品送上线，最宝贵的资源是<em>你的时间</em>。选对执行模式 = 一晚上跑完 20 个 task；选错 = 半夜醒来发现 agent 卡在第二个 task 的接口不匹配。</p>
+  <p><strong>使命 D</strong>：团队最容易问的一句 —— "为什么我要用 subagent，直接一个 prompt 让 AI 全写完不行吗？" 这一课给你答案。</p>
+</div>
+
+<h2 data-num="Ⅱ">两种模式的定义</h2>
+
+<div class="paths" style="grid-template-columns: 1fr 1fr;">
+  <div class="path-card arch">
+    <span class="tag">Mode A · 最彻底</span>
+    <h3>subagent-driven-development</h3>
+    <p>每个 task 派 <strong>fresh implementer</strong> subagent · 实现完 <strong>fresh task-reviewer</strong> 评审 · spec 合规 + 代码质量两关都过 · 才允许下一 task · 最后 <strong>whole-branch reviewer</strong> 收尾。</p>
+    <p><strong>成本：</strong>每 task 至少 2 份 fresh context。</p>
+  </div>
+  <div class="path-card bounded">
+    <span class="tag">Mode B · 最省</span>
+    <h3>executing-plans (native)</h3>
+    <p>本 session 一路把所有 task 都实现 · <strong>结束时</strong>一个更强模型 reviewer 走一遍整枝。</p>
+    <p><strong>成本：</strong>一份 session context + 一份最后 reviewer。</p>
+  </div>
+</div>
+
+<p>两者<em>都不是</em>默认的"更高级 vs 更低级" —— 是<strong>成本 / 独立性 / 上下文长度</strong>的三维取舍。</p>
+
+<h2 data-num="Ⅲ">Subagent 的 3 个隐藏机制</h2>
+
+<p>README 只讲了一句话："每 task 一个 subagent + 每 task 后一次评审"。真正跑起来靠的是 <span class="skill">subagent-driven-development</span> 里的三条硬约束：</p>
+
+<h3>① 台账（Ledger）：跨 compact 恢复</h3>
+<p>Session 会 compact（上下文压缩），对话记忆会丢。SKILL.md 明说：<em>"Conversation memory does not survive compaction. In real sessions, controllers that lost their place have re-dispatched entire completed task sequences."</em> 每个 plan 拥有一个 workspace 里的 <code>progress.md</code> 台账，记录每个 task 的完成 commit。<strong>Compaction 之后：相信台账 + git log，而不是相信你自己的记忆。</strong></p>
+
+<h3>② 裁决，不暂停（Rulings, not stalls）</h3>
+<p>Subagent 跑起来时遇到冲突 / 歧义 / plan 缺陷，<strong>不停下来问你</strong>。SKILL.md 的原话：<em>"A wrong ruling costs rework your human partner can see and undo; a session parked on a question costs their whole day and buys nothing."</em> Agent 会：把裁决写进台账 → 继续跑。你回来后可以看到"这里我判了 X 因为 Y，代价 Z"。</p>
+
+<h3>③ 4 个真正的暂停条件</h3>
+<p>Subagent 只会因为下面 <strong>4 种情况</strong>停下来问你：</p>
+<ol>
+  <li>不可逆 / 破坏性操作</li>
+  <li>安全敏感动作</li>
+  <li>Worktree 之外的副作用（merge / push 到共享分支 / publish）</li>
+  <li>Plan 已经烂到"任何方向都是猜"</li>
+</ol>
+<p>除此之外 <strong>不许停</strong>。"要继续吗？" 这种问句被明确列为浪费你时间的行为。</p>
+
+<h2 data-num="Ⅳ">Native 模式不是"随便做做"</h2>
+
+<p>Native 的对应 skill 是 <span class="skill">executing-plans</span>。它同样要求：plan 是权威 · 每 task 走完 · 最后必须有 <em>独立</em> 的 whole-branch reviewer（不是自己审自己）。区别只在于：<strong>中间没有 fresh context</strong>，所以整个 session 是一个人的连续工作记忆。</p>
+
+<div class="callout warn">
+  <div class="callout-label">Native 的失败模式</div>
+  <p>Task 5 的一个错误决定会污染 Task 6–20 的上下文 —— 因为"你之前也是这样做的"。<strong>Subagent 天然免疫这个</strong>，因为每个 subagent 只看自己那 task 的 brief。Native 免疫不了。</p>
+</div>
+
+<h2 data-num="Ⅴ">决策表：什么时候选哪个</h2>
+
+<table>
+  <thead><tr><th>Plan 特征</th><th>Subagent</th><th>Native</th></tr></thead>
+  <tbody>
+    <tr><td>Task 数量 ≥ 10</td><td>✓</td><td>勉强</td></tr>
+    <tr><td>Task 间接口复杂 / 依赖强</td><td>✓（Interfaces 块 = 契约）</td><td>—</td></tr>
+    <tr><td>需要无人值守 2+ 小时</td><td>✓</td><td>—</td></tr>
+    <tr><td>出错代价高（生产数据 / 迁移）</td><td>✓</td><td>—</td></tr>
+    <tr><td>Token 预算紧张</td><td>—</td><td>✓</td></tr>
+    <tr><td>Task 数量 ≤ 5 且独立性高</td><td>过度</td><td>✓</td></tr>
+    <tr><td>Plan 已把设计说透 · 中等模型够用</td><td>过度</td><td>✓</td></tr>
+    <tr><td>快速 spike 验证一个方向</td><td>—</td><td>✓</td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <div class="callout-label">经验法则</div>
+  <p><strong>Task 数量 × 出错代价 / token 预算 ≥ 1</strong> → Subagent。<br>
+  ≤ 5 个 task 且都在同一份既有代码里挪 · Native。<br>
+  任何一次跑完发现"其实另一半 subagent 早该报出来" → 下次升 Subagent。</p>
+</div>
+
+<h2 data-num="Ⅵ">Recall 练习</h2>
+
+<p style="font-size:0.92rem; color: var(--ink-soft);">Q1 复习 0003（plan 与 subagent 的关系）。Q2–Q6 关于本课。</p>
+
+<div class="quiz" data-quiz-id="l0004">
+
+  <div class="q" data-answer="2" data-explain="每个 fresh subagent 只看到自己那一个 task 的 brief，看不到别的 task。Interfaces 块（Consumes/Produces）就是它们之间唯一的接口契约。">
+    <div class="q-number">Q1 · 复习 0003（spacing）</div>
+    <div class="q-text">为什么 subagent 模式下 plan 里的 <em>Interfaces</em> 块比 native 模式下更要命？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">因为 subagent 会读多个 task 的 plan</button>
+      <button class="opt" data-i="1">因为 native 模式根本不需要 plan</button>
+      <button class="opt" data-i="2">因为 subagent 只看自己 · 需契约</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="0" data-explain="Rulings, not stalls：agent 应把裁决写进台账并继续，而不是回来问你。只有 4 种情况才停（不可逆 / 安全 / 跨 worktree 副作用 / plan 彻底烂）。">
+    <div class="q-number">Q2 · 停 or 不停</div>
+    <div class="q-text">Subagent 跑到 Task 8，发现 plan 里两个 task 的函数命名冲突。它应：<strong>（假设不涉及不可逆 / 安全）</strong></div>
+    <div class="opts">
+      <button class="opt" data-i="0">自己裁决 · 写台账 · 继续跑</button>
+      <button class="opt" data-i="1">立刻停下 · 回来问人类决策</button>
+      <button class="opt" data-i="2">忽略冲突 · 两个名字都用一遍</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="1" data-explain="Ledger（progress.md）+ git log 是恢复的唯一真相。compact 之后自己的记忆不可信。">
+    <div class="q-number">Q3 · 台账</div>
+    <div class="q-text">Session compact 后 agent 不记得 Task 3–7 是不是已经做过了。它应该相信：</div>
+    <div class="opts">
+      <button class="opt" data-i="0">对话历史里最近几条消息</button>
+      <button class="opt" data-i="1">Ledger 与 git log · 二者一致</button>
+      <button class="opt" data-i="2">重新跑一遍 Task 3–7 更保险</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="2" data-explain="5 个独立小 task + token 预算紧 + plan 已经把设计说透 → 三个信号都指向 Native。用 subagent 是浪费。">
+    <div class="q-number">Q4 · 决策</div>
+    <div class="q-text">一个 5 个 task 的 plan · task 之间几乎独立 · token 预算紧 · plan 已经把设计说透。选：</div>
+    <div class="opts">
+      <button class="opt" data-i="0">Subagent · 因为它总是更安全</button>
+      <button class="opt" data-i="1">混合 · 前 3 用 Subagent 后 2 用 Native</button>
+      <button class="opt" data-i="2">Native · 因为设计已定预算紧</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="1" data-explain="Native 的失败模式 = 中间一个错误决定污染后续所有 task 的判断。Subagent 因为 fresh context 天然免疫。">
+    <div class="q-number">Q5 · Native 的坑</div>
+    <div class="q-text">Native 模式相对 subagent，最独特的失败模式是：</div>
+    <div class="opts">
+      <button class="opt" data-i="0">最后 reviewer 会拒绝所有 task</button>
+      <button class="opt" data-i="1">错误判断会污染后续 task 上下文</button>
+      <button class="opt" data-i="2">它必须依赖台账才能跑起来</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="0" data-explain="Subagent 不是更高级，是更贵。选它是因为'出错代价 × 独立性需求'高于'多份 fresh context 的 token 成本'。">
+    <div class="q-number">Q6 · 布道（mission D）</div>
+    <div class="q-text">同事说："subagent 一听就是更高级的模式，我以后所有活都开它。" 你的回应：</div>
+    <div class="opts">
+      <button class="opt" data-i="0">"不是等级是取舍 · 它烧 token"</button>
+      <button class="opt" data-i="1">"对 · 全部用 subagent 更安全"</button>
+      <button class="opt" data-i="2">"subagent 只能配 Opus 用而已"</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+</div>
+
+<h2 data-num="Ⅶ">行动：3 个真实场景 · 选模式</h2>
+
+<div class="action">
+  <h3>Action Step · 15 分钟</h3>
+  <p>下面 3 个场景，为每一个写下：<strong>选哪个模式？为什么？</strong>（每段 2-3 句）</p>
+  <ol>
+    <li><strong>场景 1 · 你的小产品</strong>：假设你要用 superpowers 从零搭第一个 feature（比如"注册 + 登录"）。你估计 plan 会拆成 6-8 个 task，task 之间接口较多，token 预算你不太心疼。<br>→ 选哪个？</li>
+    <li><strong>场景 2 · 团队老服务</strong>：同事要给一个 3 年历史的 express 服务加一个"给管理员导出 CSV"的 endpoint，plan 3 个 task，都在同一个 module 里。<br>→ 选哪个？</li>
+    <li><strong>场景 3 · 生产数据库迁移</strong>：你要把 40 万行数据从旧 schema 迁到新 schema，plan 有 12 个 task 但其中 4 个涉及 <code>UPDATE</code> 生产表。<br>→ 选哪个？有什么<em>额外</em>顾虑？（提示：4 个 stop 条件）</li>
+  </ol>
+  <p>写完贴给我。场景 3 是最能暴露对模式理解的。</p>
+</div>
+
+<h2 data-num="Ⅷ">如何给同事讲这件事</h2>
+
+<div class="callout ok">
+  <div class="callout-label">可复制到 team wiki 的一段话</div>
+  <p>"Superpowers 有两条实现路径：<strong>Subagent</strong>（每个 task 一个新 agent 实现 + 一个新 agent 评审）和 <strong>Native</strong>（本 session 一路推完 + 最后整枝评审）。</p>
+  <p><strong>Subagent 不是更高级，是更贵。</strong>它烧 2× token 换两样东西：Task 之间接口通过 <em>plan 里的 Interfaces 块</em> 强制契约 · 每个 task 的错误判断不会污染下一个 task。</p>
+  <p>什么时候用：<em>Task ≥ 10 · 出错代价高 · 需要长时间无人值守</em>。什么时候不用：<em>小 plan · 预算紧 · 设计已经定得死死的</em>。</p>
+  <p>Subagent 有一个反直觉的规则：它跑起来时<strong>不问你问题</strong>。碰到 plan 里的冲突，它自己裁决、写进台账、继续跑。只有 4 种情况会真停下来：不可逆操作 / 安全 / 影响 worktree 外（比如 push 到共享分支）/ plan 烂到没法继续。也就是说 —— 你回来后能看到它每一个判断，但不会被打扰。"</p>
+</div>
+
+<footer class="course-foot">
+  <div class="next-steps">
+    <h4>Primary Source</h4>
+    <p><a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/subagent-driven-development/SKILL.md"><code>skills/subagent-driven-development/SKILL.md</code></a> —— 特别是 <em>Rulings, not stalls</em> 段与 <em>Setup</em> 段的 ledger 部分。<br>
+    <a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/writing-plans/SKILL.md"><code>writing-plans/SKILL.md</code></a> 尾部 <em>Execution Handoff</em> 段 —— 两种模式的一手对比。<br>
+    <a href="https://github.com/obra/superpowers/tree/main/skills/executing-plans"><code>executing-plans/</code></a> —— native 模式的具体做法。</p>
+    <h4 style="margin-top:1rem">延伸参考</h4>
+    <p><a href="../reference/execution-modes.html">执行模式决策表 · Reference</a></p>
+    <h4 style="margin-top:1rem">下一节预告</h4>
+    <p>0005 · <strong>Verification Before Completion</strong>：agent 说"搞定了"的时候，你怎么知道它没在骗你？Iron Law · Gate Function · 常见"未验证的成功声明"清单。</p>
+  </div>
+</footer>
+
+</body>
+</html>

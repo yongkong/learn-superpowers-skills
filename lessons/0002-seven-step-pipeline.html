@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Lesson 0002 · 7 步流水线全景</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+
+<header class="course-head">
+  <div class="crumbs">
+    Superpowers · Lesson 0002 · 约 14 分钟 · <a href="./0001-choose-your-path.html">← 上一课</a>
+  </div>
+  <h1>7 步流水线全景</h1>
+  <p class="subtitle">当 agent "跑偏"时，绝大多数情况是它在流水线里跳了一格，或把两格并成了一格。这一课给你一张能定位问题的地图。</p>
+</header>
+
+<h2 data-num="Ⅰ">为什么现在讲这个</h2>
+
+<p>上一课的三路分类是 <strong>Step 1 内部的判断</strong>。这一课把镜头拉远，看整条流水线。</p>
+
+<div class="callout">
+  <div class="callout-label">Mission tie-in</div>
+  <p><strong>使命 A（做小产品）</strong>：你会在第 3–6 步之间反复待几个小时。认得出自己在哪一格，才知道下一步该给什么输入。</p>
+  <p><strong>使命 D（带团队）</strong>："白板讲 7 步" 是 superpowers 布道的开场动作。讲不清这 7 步 = 同事只会把 agent 当 ChatGPT 用。</p>
+</div>
+
+<h2 data-num="Ⅱ">地图</h2>
+
+<p>superpowers 官方 README 里 <em>The Basic Workflow</em> 定义了 7 步：从 <span class="skill">brainstorming</span> 到 <span class="skill">finishing-a-development-branch</span>。完整表格在参考文档里，先看一句话版：</p>
+
+<ol style="line-height:2;">
+  <li><span class="skill">brainstorming</span> —— 从需求中"炼"出设计（三路分类在这）</li>
+  <li><span class="skill">using-git-worktrees</span> —— 建隔离工作区 + <strong>跑一次基线测试</strong></li>
+  <li><span class="skill">writing-plans</span> —— 把设计拆成 2–5 分钟一步的 bite-sized 任务</li>
+  <li><span class="skill">subagent-driven-development</span> 或 <span class="skill">executing-plans</span> —— 选执行模式</li>
+  <li><span class="skill">test-driven-development</span> —— RED → GREEN → REFACTOR，<em>在每个 task 内</em></li>
+  <li><span class="skill">requesting-code-review</span> —— <em>在 task 之间</em>，对照 plan 评审</li>
+  <li><span class="skill">finishing-a-development-branch</span> —— 呈现 merge / PR / keep 三选一，<strong>由人决定</strong></li>
+</ol>
+
+<p style="text-align:center; margin: 1.5rem 0;">
+  ↳ 完整速查图（含每步退出闸门与失败模式）：
+  <a href="../reference/superpowers-pipeline.html"><strong>Superpowers 7 步流水线 · Reference</strong></a>
+</p>
+
+<h2 data-num="Ⅲ">三个反直觉的点</h2>
+
+<p>背下来 7 步不难，难的是不被直觉骗到。三处最容易讲错给同事：</p>
+
+<h3>① 流水线不是直线：4/5/6 是嵌套循环</h3>
+
+<div class="callout warn">
+  <div class="callout-label">常见误解</div>
+  <p>"我先跑完所有 task（第 4 步），再补 TDD 和 code review。" —— <strong>错。</strong></p>
+</div>
+
+<p>第 4 步是<em>外层策略</em>（选 subagent 还是 native）；第 5 步 <span class="skill">test-driven-development</span> 和第 6 步 <span class="skill">requesting-code-review</span> 是<em>每个 task 内 / task 之间</em>各跑一次。也就是说：单个 task 的循环长这样：</p>
+
+<pre><code>Task N:
+  → RED：写一个会失败的测试，跑，看它失败
+  → GREEN：写最小实现，跑，看它通过
+  → REFACTOR
+  → commit
+  → code review（对照 plan 检查这个 task）
+    → 通过才允许进 Task N+1
+    → Critical 问题 = 阻塞前进</code></pre>
+
+<h3>② 第 4 步有岔路：Subagent 还是 Native</h3>
+
+<p>这不是"哪个更高级"的问题，是<strong>成本 vs 独立性</strong>的取舍。一手定义在 <a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/writing-plans/SKILL.md"><span class="skill">writing-plans</span> 尾部 Execution Handoff 段</a>：</p>
+
+<table>
+  <thead><tr><th></th><th>Subagent-driven</th><th>Native (executing-plans)</th></tr></thead>
+  <tbody>
+    <tr><td>每 task 用</td><td>新 subagent 实现 + 新 reviewer 评审</td><td>本 session 直接实现</td></tr>
+    <tr><td>独立评审</td><td>每 task 都有 · 最后再整枝</td><td>只在最后整枝一次</td></tr>
+    <tr><td>Token 成本</td><td><strong>高</strong></td><td>低</td></tr>
+    <tr><td>适合</td><td>task 间接口复杂 · 出错代价高 · 长时间无人值守</td><td>plan 已经把设计说透 · 中等模型够用</td></tr>
+  </tbody>
+</table>
+
+<p>Agent 会在 plan 结束时问你选哪个。<strong>不要闭眼选 subagent</strong>：一个 3 task 的小 feature 用 subagent 是浪费；一个 30 task 的骨架改动用 native 是让 bug 藏到最后一关。</p>
+
+<h3>③ 第 7 步的 3 选项：菜单属于人</h3>
+
+<p><span class="skill">finishing-a-development-branch</span> 在测试全绿之后必须呈现这个菜单：</p>
+
+<pre><code>Implementation complete. What would you like to do?
+1. Merge back to &lt;base-branch&gt; locally
+2. Push and create a Pull Request
+3. Keep the branch as-is (I'll handle it later)
+
+Which option?</code></pre>
+
+<div class="callout warn">
+  <div class="callout-label">Agent 常见的越权</div>
+  <p>"测试都过了我这就 merge。" —— <strong>停。</strong>SKILL.md 明确列出反模式：<em>"They obviously want it merged" → Integration is your human partner's decision.</em></p>
+  <p>Discard 更严格：只有你亲手敲 <code>discard</code> 这个词才算授权。"看起来他不想要了" 不算。</p>
+</div>
+
+<h2 data-num="Ⅳ">Recall 练习</h2>
+
+<p style="font-size:0.92rem; color: var(--ink-soft);">Q1 是上一课的 spacing 检查（不答对不许往下走）。Q2–Q6 关于本课。</p>
+
+<div class="quiz" data-quiz-id="l0002">
+
+  <div class="q" data-answer="2" data-explain="Bounded 的终点状态是'直接进入 normal dev workflow · 没有 plan 文档'。写 plan 是 Architectural 才有的动作。">
+    <div class="q-number">Q1 · 复习 0001（spacing）</div>
+    <div class="q-text">Bounded 路径经 <span class="skill">brainstorming</span> 批准后，会不会产出一份 plan 文档？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">会，Bounded 也必须写 plan</button>
+      <button class="opt" data-i="1">会，但只是可选不是必须写</button>
+      <button class="opt" data-i="2">不会，Bounded 完全跳过 plan</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="1" data-explain="Architectural 的 brainstorming 出口是 spec 文件 → 用户 review → 才允许调 writing-plans。基线测试是下一步的事。">
+    <div class="q-number">Q2 · 谁接谁</div>
+    <div class="q-text">Architectural 路径下，用户刚在 chat 里说 "设计 ok"。Agent 的<strong>紧接着</strong>下一个动作是？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">跑 <span class="skill">using-git-worktrees</span> 建工作区</button>
+      <button class="opt" data-i="1">把设计写成 spec 文件并请我 review</button>
+      <button class="opt" data-i="2">直接调用 <span class="skill">writing-plans</span> 拆任务</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="0" data-explain="Step 3 的核心是'基线全绿'：不 clean 的话之后任何红色都不知道是新引入的还是本来就有的。这跟'建立隔离'同样重要。">
+    <div class="q-number">Q3 · Step 2 的意义</div>
+    <div class="q-text">为什么 <span class="skill">using-git-worktrees</span> 强制跑一次项目 setup + 全套测试？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">确保基线全绿 · 后续红灯可读</button>
+      <button class="opt" data-i="1">为了 warm-up 编译缓存以省时间</button>
+      <button class="opt" data-i="2">这只是习惯动作没有实质用途</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="2" data-explain="TDD 与 requesting-code-review 嵌在每个 task 里跑，不是 pipeline 末端才补。这是嵌套循环不是线性。">
+    <div class="q-number">Q4 · 嵌套 vs 直线</div>
+    <div class="q-text">关于 <span class="skill">test-driven-development</span>（Step 5）和 <span class="skill">requesting-code-review</span>（Step 6）的时机，哪个说法正确？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">都在所有 task 完成后统一跑一次</button>
+      <button class="opt" data-i="1">TDD 每 task · review 只在分支末</button>
+      <button class="opt" data-i="2">TDD 每 task · review 每 task 之间</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="1" data-explain="Native (executing-plans) = 本 session 一路实现 · 最后仅一次整枝 review · token 最省。">
+    <div class="q-number">Q5 · 岔路选择</div>
+    <div class="q-text">同事要赶工，明确不想为每 task 起 fresh subagent。他应该选哪种执行模式？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">Subagent-driven · 因为它最彻底</button>
+      <button class="opt" data-i="1">Native · 因为只最后整枝评审</button>
+      <button class="opt" data-i="2">跳过 Step 4 · 直接手动改代码不用</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="0" data-explain="集成决策属于人。SKILL.md 明列反模式：'They obviously want it merged'。必须呈现菜单并等待选择。">
+    <div class="q-number">Q6 · 布道（mission D）</div>
+    <div class="q-text">同事第一次用 superpowers，看到 agent 跑完最后一个 task 全绿，直接执行了 <code>git merge</code>。你的判断：</div>
+    <div class="opts">
+      <button class="opt" data-i="0">越权 · 应呈现三选菜单等人选</button>
+      <button class="opt" data-i="1">正常 · 全绿就意味着可以自动合</button>
+      <button class="opt" data-i="2">正常 · 同事没明确反对就等于批</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+</div>
+
+<h2 data-num="Ⅴ">行动： Mental walkthrough · 10 分钟</h2>
+
+<div class="action">
+  <h3>Action Step · 今天/明天做</h3>
+  <p>想象你的 <em>使命 A 的那个小产品</em>（还没告诉过我具体是什么 —— 现在在心里定一个方向即可）。用 5 分钟在纸上按下面 7 栏填一遍：</p>
+  <ol>
+    <li><strong>Step 1</strong>：brainstorming 三路里我会走哪一路？为什么？（预期 = Architectural，因为 repo 里它还不存在）</li>
+    <li><strong>Step 2</strong>：我的项目主分支是 <code>main</code> 还是 <code>master</code>？基线测试怎么跑？（写死命令）</li>
+    <li><strong>Step 3</strong>：我预计第一个 plan 会被拆成几个 task？（不用真拆，猜一个数）</li>
+    <li><strong>Step 4</strong>：这个产品第一次跑，我倾向 subagent 还是 native？为什么？</li>
+    <li><strong>Step 5</strong>：我熟悉的测试框架是什么？RED-GREEN 循环我知道怎么手动跑一次吗？</li>
+    <li><strong>Step 6</strong>：Task 之间的 code review 我会看什么？（对照 plan？看接口一致性？）</li>
+    <li><strong>Step 7</strong>：完成后我打算 merge 到本地还是开 PR？（前者= solo，后者=给团队看，与 mission D 直接相关）</li>
+  </ol>
+  <p>写完后把这张纸拍照或直接文字整理贴给我 —— 我会据此写 <code>learning-records/0001-...</code>，并调整 0003 的深度。</p>
+</div>
+
+<h2 data-num="Ⅵ">如何给同事讲这件事（白板版）</h2>
+
+<div class="callout ok">
+  <div class="callout-label">可复制到 team wiki 的一段话</div>
+  <p>"Superpowers 把'让 AI 帮我写代码'拆成 7 站。你可以把它想成一条流水线：<strong>设计 → 隔离 → 拆任务 → 执行 → 每步 TDD → 每步评审 → 最后人来决定怎么合。</strong></p>
+  <p>三个必须记住的点：</p>
+  <ul>
+    <li>它 <em>不是</em> 一条直线。第 5 步 TDD 和第 6 步 review 是<em>在每一个 task 里/之间</em>各跑一次的 —— 不是最后统一补。</li>
+    <li>第 4 步有岔路：可以让每 task 都由 fresh subagent 做（贵但彻底），也可以本 session 一路推完再评审（省 token）。选哪个是<em>你</em>的决定，不是默认。</li>
+    <li>第 7 步的 <strong>merge / PR / keep</strong> 三选一，是<em>人</em>选的。如果哪天 agent 测试绿了就自己 merge 了 —— 那是 bug，回来告诉我。</li>
+  </ul>
+  <p>一句话总结：<em>7 步流水线不是 bureaucracy，每一步背后都是一个具体的失败模式。</em></p>
+</div>
+
+<footer class="course-foot">
+  <div class="next-steps">
+    <h4>Primary Source（本课引用的一手原文）</h4>
+    <ul>
+      <li><a href="https://github.com/obra/superpowers#the-basic-workflow">README · The Basic Workflow</a> —— 7 步的权威定义</li>
+      <li><a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/using-git-worktrees/SKILL.md"><code>using-git-worktrees/SKILL.md</code></a> —— Step 2 的 Step 0 检测 & 基线验证</li>
+      <li><a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/writing-plans/SKILL.md"><code>writing-plans/SKILL.md</code></a> —— 尾部 Execution Handoff 段的 subagent / native 官方定义</li>
+      <li><a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/finishing-a-development-branch/SKILL.md"><code>finishing-a-development-branch/SKILL.md</code></a> —— Step 7 的 3 选项菜单 & discard 授权规则</li>
+    </ul>
+    <h4 style="margin-top:1rem">延伸参考</h4>
+    <p><a href="../reference/superpowers-pipeline.html">7 步流水线速查图</a> · <a href="../reference/brainstorming-paths.html">Brainstorming 三路分类速查表</a></p>
+    <h4 style="margin-top:1rem">下一节预告</h4>
+    <p>0003 · <span class="skill">writing-plans</span> 的 <em>No Placeholders</em> 规则。会给你一段"看起来对但充满 TBD"的坏 plan，你亲手改。这是使命 A 真正落地到"能交付"的那一关。</p>
+    <h4 style="margin-top:1rem">有问题？</h4>
+    <p>随时回来问。特别是那个 <em>mental walkthrough</em>：如果你 Step 4（选 subagent 还是 native）拿不准，把你产品方向告诉我，我们现场推演。</p>
+  </div>
+</footer>
+
+</body>
+</html>

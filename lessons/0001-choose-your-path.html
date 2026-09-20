@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Lesson 0001 · 三路分类</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+
+<header class="course-head">
+  <div class="crumbs">
+    Superpowers · Lesson 0001 · 约 12 分钟
+  </div>
+  <h1>三路分类：Spike / Bounded / Architectural</h1>
+  <p class="subtitle">Agent 想跳过设计直接写代码？——那是你没搞清 superpowers 让它先做的第一件事。</p>
+</header>
+
+<h2 data-num="Ⅰ">为什么这是第一课</h2>
+
+<p>你的使命有两条：<strong>用 superpowers 真正做出一个小产品</strong>，和<strong>把这套方法带进 2–10 人小团队</strong>。这两条都撞在同一堵墙上：</p>
+
+<div class="callout">
+  <div class="callout-label">Common failure</div>
+  <p>"我就加个小功能，也要走完整流程？" —— 这是 superpowers 在团队里被否掉的第一句话。</p>
+  <p>答案不是"要，别偷懒"。答案是<strong>「看情况，但情况不是你想的那样」</strong>。这个"情况"就是 <span class="skill">brainstorming</span> 的三路分类。</p>
+</div>
+
+<p>本节结束后，你会知道：拿到一个需求，<em>不是</em>问"这大不大"，而是问 <strong>"这条流程现在在这个 repo 里能读到吗？"</strong></p>
+
+<h2 data-num="Ⅱ">三条路径 · 60 秒版本</h2>
+
+<div class="paths">
+  <div class="path-card spike">
+    <span class="tag">Path A</span>
+    <h3>Spike</h3>
+    <p><strong>要一个答案，不要一段代码。</strong></p>
+    <p>"能不能做？" / "值不值得？"</p>
+    <p>2-3 句说清 probe → 点头就跑 → 报告 recommendation。<br>代码全部标 <em>throwaway</em>。</p>
+  </div>
+  <div class="path-card bounded">
+    <span class="tag">Path B</span>
+    <h3>Bounded</h3>
+    <p><strong>改的是这个 repo 里已经存在的流程。</strong></p>
+    <p>加 flag、单文件 fix、给已有 endpoint 补参数。</p>
+    <p>几个澄清问题 → chat 里一段短设计 → <strong>STOP 等 yes</strong> → 实现。<br>没有 spec 文件，没有 plan 文档。</p>
+  </div>
+  <div class="path-card arch">
+    <span class="tag">Path C</span>
+    <h3>Architectural</h3>
+    <p><strong>这个 repo 里还没有这条流。</strong></p>
+    <p>新项目、新子系统、改变组件之间怎么拼。</p>
+    <p>完整链路：一问一答 → 2-3 方案 → 分段确认设计 → <strong>写 spec 文件</strong> → 用户 review → <span class="skill">writing-plans</span>。</p>
+  </div>
+</div>
+
+<p style="font-size:0.92rem; color: var(--ink-soft); text-align:center; margin-top:1.5rem;">
+  ↳ 完整速查表（打印友好）：<a href="../reference/brainstorming-paths.html"><strong>Brainstorming 三路分类 · Reference</strong></a>
+</p>
+
+<h2 data-num="Ⅲ">决策的一刀</h2>
+
+<p><span class="skill">brainstorming</span> 里最反直觉的一条：<strong>Bounded 度量的是 repo，不是任务的复杂度，也不是你的熟悉度。</strong></p>
+
+<div class="callout warn">
+  <div class="callout-label">直觉陷阱</div>
+  <p>你做过 100 个 todo app，但你在<em>这个</em> repo 里第一次建 todo 功能 —— <strong>它是 Architectural</strong>。因为这个 repo 里没有既存流程可以读。</p>
+  <p>反过来：一个 5000 行代码的巨型服务里，你加一个只影响两三个文件的开关 —— <strong>它是 Bounded</strong>。因为流程已经在那儿。</p>
+</div>
+
+<p>判据只有一条：</p>
+
+<blockquote style="border-left:4px solid var(--accent); padding:0.4rem 1rem; margin:1.5rem 0; font-style:italic; color:var(--ink);">
+"这条流程现在在这个 repo 里能读到吗？"
+</blockquote>
+
+<ul>
+  <li><strong>能读到</strong> → Bounded（改它）</li>
+  <li><strong>读不到 · 我要的答案是"能不能"</strong> → Spike</li>
+  <li><strong>读不到 · 我要的是能留下来的代码</strong> → Architectural</li>
+</ul>
+
+<h2 data-num="Ⅳ">棘轮规则 &amp; 批准闸门</h2>
+
+<p>两个必须一起记住的硬约束：</p>
+
+<h3>① 单向棘轮（Ratchet）</h3>
+<p>任务中途发现隐藏复杂度 → 路径 <strong>只能升不能降</strong>：Spike → Bounded → Architectural。停下来，公开说出来，重新分类。</p>
+
+<h3>② 批准只覆盖"当前这一层"</h3>
+<p>SKILL.md 的 <code>&lt;HARD-GATE&gt;</code> 说得很直接：<em>"A reply approves the stage actually presented."</em> 也就是：</p>
+
+<ul>
+  <li>用户批准了 chat 里那段设计 ≠ 批准了 spec 文件 —— 你还<strong>没写</strong>那个文件</li>
+  <li>用户批准了 spec 文件 ≠ 批准了 implementation plan —— 你还<strong>没写</strong>那个 plan</li>
+  <li>一个任务批准 ≠ 下一个类似任务的预先批准</li>
+</ul>
+
+<div class="callout warn">
+  <div class="callout-label">最容易被 agent 骗过的一刻</div>
+  <p>Agent 说："设计你看了 ok 对吧？那我开写了。" —— 在 Architectural 路径下这是<strong>跳闸门</strong>。正确下一步应该是：把设计写成 spec 文件 → 提交 git → 请你 review 那个<em>文件</em>。</p>
+</div>
+
+<h2 data-num="Ⅴ">Recall 练习</h2>
+
+<p style="font-size:0.92rem; color: var(--ink-soft);">凭记忆作答。答完会立即显示反馈；每一题只允许选一次（这是 recall practice，不是猜谜）。答错不要紧 —— 反馈里会告诉你为什么。</p>
+
+<div class="quiz" data-quiz-id="l0001">
+
+  <div class="q" data-answer="2" data-explain="这个 repo 里从没做过登录，属于新子系统 = Architectural。熟悉度不改变分类。">
+    <div class="q-number">Q1 · 基础判断</div>
+    <div class="q-text">在一个还没有任何认证逻辑的新 repo 里，你要加"用户登录"。三路里选哪条？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">Spike，先探索方案可行性</button>
+      <button class="opt" data-i="1">Bounded，这是常见的标准小功能</button>
+      <button class="opt" data-i="2">Architectural，因为仓库无此流程</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="1" data-explain="仓库里已经有登录流程，你只是给它加一种新登录方式 = 修改既存流程 = Bounded。">
+    <div class="q-number">Q2 · 反转</div>
+    <div class="q-text">登录功能已存在，现在给它加一个"4 位 PIN 快捷登录"选项。</div>
+    <div class="opts">
+      <button class="opt" data-i="0">Architectural，因为动了认证子系统</button>
+      <button class="opt" data-i="1">Bounded，因为改的是既存流程</button>
+      <button class="opt" data-i="2">Spike，因为要评估 PIN 安全性</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="0" data-explain="问题问的是『哪个更合适』，答案是建议不是代码。这是 Spike 的定义：输出 = 答案。">
+    <div class="q-number">Q3 · Spike 判据</div>
+    <div class="q-text">"这个附件元数据表用 SQLite 还是 Postgres？做两天能换吗？"你要 agent 帮你回答。</div>
+    <div class="opts">
+      <button class="opt" data-i="0">Spike，因为输出是一个建议</button>
+      <button class="opt" data-i="1">Bounded，因为只改配置文件一行</button>
+      <button class="opt" data-i="2">Architectural，因为牵涉数据层</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="1" data-explain="Architectural 的 HARD-GATE：会话设计批准 只允许写 spec 文件。写代码是两步之后的事。">
+    <div class="q-number">Q4 · 闸门</div>
+    <div class="q-text">Architectural 路径下，用户在 chat 里说了"设计 ok"。Agent 下一步该做什么？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">直接开始实现代码，设计已批</button>
+      <button class="opt" data-i="1">写 spec 文件并请用户 review 它</button>
+      <button class="opt" data-i="2">跳过 spec 直接调 writing-plans</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="1" data-explain="棘轮单向。中途发现复杂度 → 停 · 说 · 升。没有任何降级路径。">
+    <div class="q-number">Q5 · 棘轮</div>
+    <div class="q-text">Bounded 干到一半，你发现这不只是加个字段——需要重写整个数据访问层。这时你应当：</div>
+    <div class="opts">
+      <button class="opt" data-i="0">继续做完，别浪费当前上下文</button>
+      <button class="opt" data-i="1">停下来，说出复杂度，升到 Arch</button>
+      <button class="opt" data-i="2">停下来，降到 Spike 快速探索一下</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="1" data-explain="正确答案：分类看 repo 里流程是否存在，不看任务大小也不看熟悉度。这才是能说服同事的一句话。">
+    <div class="q-number">Q6 · 布道（mission D）</div>
+    <div class="q-text">同事吐槽："就这么个小按钮也要走 superpowers 全套？"你怎么回应最贴合它的哲学？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">"对，全部走完整流程，别偷懒"</button>
+      <button class="opt" data-i="1">"repo 里已有这条流就是 Bounded"</button>
+      <button class="opt" data-i="2">"你可以让 agent 跳过这步没关系"</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+</div>
+
+<h2 data-num="Ⅵ">行动：一个 5 分钟内可完成的动作</h2>
+
+<div class="action">
+  <h3>Action Step · 今天就做</h3>
+  <p>1. 打开你 <strong>下一次</strong> 要交给 agent 的任务（不管是 superpowers 项目还是别的）。</p>
+  <p>2. 在按下回车<em>之前</em>，先在便签上写一行：<br>
+     <code>Path = ______，因为 ____________________</code></p>
+  <p>3. 让 agent 跑 <span class="skill">brainstorming</span>（或它自己会调用）。听它<em>说出的</em>分类。</p>
+  <p>4. 对上了 → 记住这个判据。对不上 → <strong>不要立即反驳</strong>，先问它 "你为什么判成 X"，把它给的理由和你写的原因对比。</p>
+  <p>5. 把结果（3 个任务足够）写在 <a href="../learning-records/">learning-records</a> 里的第一份记录中。下一节课我会用它校准你的 ZPD。</p>
+</div>
+
+<h2 data-num="Ⅶ">如何给同事讲这件事（60 秒版）</h2>
+
+<div class="callout ok">
+  <div class="callout-label">可复制到 team wiki 的一段话</div>
+  <p>"Superpowers 不会让 agent 一上来就写代码，但也不是所有事都写 spec。它先问一句：<strong>『这条流程我们仓库里现在有没有？』</strong>——</p>
+  <ul>
+    <li>没有 · 只是想知道"能不能" → <strong>Spike</strong>：跑一段实验，出结论，代码扔掉。</li>
+    <li>没有 · 是要留下来的东西 → <strong>Architectural</strong>：走完整设计对话，落一份 spec 文件，再排 plan。</li>
+    <li>有 · 只是改它 → <strong>Bounded</strong>：几句话说清新行为，你点头，就直接动。</li>
+  </ul>
+  <p>关键是——<em>分类看的是仓库，不是任务大小，也不是我干过没干过。</em>做过的第 101 个登录，只要在这个 repo 里它是全新的，就走 Architectural。反过来，5000 行老服务里加一个开关，也是 Bounded。"</p>
+</div>
+
+<footer class="course-foot">
+  <div class="next-steps">
+    <h4>Primary Source（本课引用的一手原文）</h4>
+    <p><a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/brainstorming/SKILL.md"><code>skills/brainstorming/SKILL.md</code></a> —— 建议现在就打开，特别是 <em>Three Paths</em>、<em>HARD-GATE</em>、<em>Red Flags</em> 三节。所有本课的主张都直接来自这三段。</p>
+    <h4 style="margin-top:1rem">延伸参考</h4>
+    <p>速查表（打印友好）：<a href="../reference/brainstorming-paths.html">Brainstorming 三路分类 · Reference</a></p>
+    <h4 style="margin-top:1rem">下一节预告</h4>
+    <p>0002 · 7 步流水线全景：<span class="skill">brainstorming</span> → <span class="skill">using-git-worktrees</span> → <span class="skill">writing-plans</span> → <span class="skill">subagent-driven-development</span> → <span class="skill">test-driven-development</span> → <span class="skill">requesting-code-review</span> → <span class="skill">finishing-a-development-branch</span>。今天这一节，就是那条流水线第一格闸门里的第一个动作。</p>
+    <h4 style="margin-top:1rem">有问题？</h4>
+    <p>我是你的老师。任何时候你回到 Qoder 里对我提问都可以——比如"我这个具体需求你觉得是哪一路？"、"agent 跟我说是 bounded，我怀疑它偷懒，怎么验证"、"团队里怎么落地这条规则"。带着<em>具体场景</em>回来问，效果最好。</p>
+  </div>
+</footer>
+
+</body>
+</html>

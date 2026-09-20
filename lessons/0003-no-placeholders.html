@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Lesson 0003 · No Placeholders</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+<style>
+  .bad-plan { position: relative; background: #fff5f2; border-left: 3px solid var(--bad); padding: 1rem 1.2rem; border-radius: 0 4px 4px 0; font-family: "JetBrains Mono", monospace; font-size: 0.82rem; line-height: 1.65; white-space: pre-wrap; margin: 1rem 0; }
+  .bad-plan .tag { display: inline-block; background: var(--bad); color: #fff; font-size: 0.68rem; padding: 0.05rem 0.4rem; border-radius: 3px; margin-left: 0.4rem; vertical-align: middle; font-family: "Inter", sans-serif; letter-spacing: 0.05em; }
+  .good-plan { background: #f0f5ee; border-left: 3px solid var(--ok); padding: 1rem 1.2rem; border-radius: 0 4px 4px 0; font-family: "JetBrains Mono", monospace; font-size: 0.82rem; line-height: 1.65; white-space: pre-wrap; margin: 1rem 0; }
+  .snippet { background: var(--code-bg); padding: 0.9rem 1.1rem; border-radius: 4px; border-left: 3px solid var(--warn); font-family: "JetBrains Mono", monospace; font-size: 0.85rem; margin: 1.2rem 0; }
+</style>
+</head>
+<body>
+
+<header class="course-head">
+  <div class="crumbs">
+    Superpowers · Lesson 0003 · 约 15 分钟 · <a href="./0002-seven-step-pipeline.html">← 上一课</a>
+  </div>
+  <h1>No Placeholders：把 plan 从"看起来对"逼到"能交付"</h1>
+  <p class="subtitle">这一关过不了，前面 brainstorming / worktree 做得再漂亮都是白搭 —— subagent 拿着模糊 plan，做出来的东西一定飘。</p>
+</header>
+
+<h2 data-num="Ⅰ">为什么这是使命 A 的分水岭</h2>
+
+<div class="callout">
+  <div class="callout-label">Mission tie-in</div>
+  <p><strong>使命 A</strong>（把小产品送上线）：Step 3 (writing-plans) 是"能跑"和"能交付"的分界线。plan 里的每一个 TBD，都会在你不在场的时候被 subagent 用<em>它自己的品味</em>填掉 —— 那个品味不是你的。</p>
+  <p><strong>使命 D</strong>（带团队）：一份团队 review 只需要看一条就能判断质量：<em>这份 plan 里有没有 "appropriate" / "TBD" / "similar to" / "write tests for above"。</em>有 = 退回；没有 = 值得细看。</p>
+</div>
+
+<h2 data-num="Ⅱ">Plan 的假想读者</h2>
+
+<p>SKILL.md 里那句话非常刻薄，但正是它撑起了整条 pipeline：</p>
+
+<div class="callout warn" style="border-color: var(--ink-soft); background: #f4efe6;">
+  <div class="callout-label">From writing-plans/SKILL.md</div>
+  <p><em>"Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. …Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they don't know good test design very well."</em></p>
+</div>
+
+<p>中文直译：<strong>技术过硬 · 上下文为零 · 品味可疑 · 讨厌写测试</strong>的实习生。</p>
+
+<p>这个画像听起来像在描述 subagent，但它也精确描述了<strong>团队里刚入职的同事</strong>。这就是为什么 <span class="skill">writing-plans</span> 是团队可复用资产的核心。你写的 plan，如果那个实习生照着做能出正确的软件，那 AI 也能。</p>
+
+<h2 data-num="Ⅲ">Plan 骨架（30 秒）</h2>
+
+<p>完整模板在参考文档里。你只需要先记住：<strong>每份 plan 有 4 层结构</strong>：</p>
+
+<ol>
+  <li><strong>Header</strong>：Goal / Architecture / Tech Stack / <strong>Spec 路径</strong>（指向 Step 1 已批准的 spec 文件）</li>
+  <li><strong>Global Constraints</strong>：项目级红线（版本 / 依赖 / 命名）—— 每条从 spec 一字不差 copy</li>
+  <li><strong>Review Focus</strong>：spec 隐含但没 task 显式覆盖、最容易咬人的 5 类输入 —— 这个 section 是 superpowers 独有的东西</li>
+  <li><strong>每个 Task</strong>：Files 块 · <strong>Interfaces 块（Consumes / Produces）</strong> · Step 1..N 每个 step 一个 checkbox + code block</li>
+</ol>
+
+<p style="text-align:center; margin: 1.2rem 0;">
+  ↳ 完整骨架与代码示例：<a href="../reference/writing-plans-checklist.html"><strong>writing-plans · 检查清单</strong></a>
+</p>
+
+<h2 data-num="Ⅳ">No Placeholders · 六种失败</h2>
+
+<p>SKILL.md 里的 <em>No Placeholders</em> 段列了 6 种"plan 失败"，我把它们编号为 <strong>P1–P6</strong>，方便记忆：</p>
+
+<table>
+  <thead><tr><th style="width:5rem">编号</th><th>症状</th><th>为什么致命</th></tr></thead>
+  <tbody>
+    <tr><td><strong>P1 · TBD</strong></td><td><code>TBD</code> / <code>TODO</code> / <code>implement later</code> / <code>fill in details</code></td><td>决策成本推给读者 = 没写。</td></tr>
+    <tr><td><strong>P2 · 空泛</strong></td><td><code>add appropriate error handling</code> / <code>handle edge cases</code></td><td>"appropriate" 是品味词，零上下文读者无法定义。</td></tr>
+    <tr><td><strong>P3 · 无测试码</strong></td><td><code>Write tests for the above</code>（不带测试代码块）</td><td>测试设计 = 规格设计。没码 = 没规格。</td></tr>
+    <tr><td><strong>P4 · 相似引用</strong></td><td><code>Similar to Task N</code></td><td>Executor 可能<em>乱序</em>读 task。冗余 ≠ 错误。</td></tr>
+    <tr><td><strong>P5 · 只描述</strong></td><td>Code step 只说"做什么"不给 code block 说"怎么做"</td><td>自然语言无法保证精确性。</td></tr>
+    <tr><td><strong>P6 · 未定义符号</strong></td><td>引用了任何 task 都没定义的 类型/函数/方法</td><td>凭空引用 = 幻觉。</td></tr>
+  </tbody>
+</table>
+
+<h2 data-num="Ⅴ">反面示例 · 一份"看起来挺对"的坏 plan</h2>
+
+<p>下面是某个"用户注册 endpoint"的 plan 摘要。<strong>它同时踩齐了 P1–P6</strong>。花 3 分钟读完，找到每一处：</p>
+
+<div class="bad-plan">### Task 1: 骨架搭建
+- 添加必要的依赖 (TBD: 版本)                                <span class="tag">P1</span>
+- 建 RegisterController 空壳
+
+### Task 2: 写注册接口的实现
+- Create: src/controllers/register.ts
+- Steps:
+  - 写 register handler                                       <span class="tag">P5</span>
+  - 添加 appropriate validation                              <span class="tag">P2</span>
+  - Write tests for the above                                <span class="tag">P3</span>
+  - Commit
+
+### Task 3: 登录接口
+- Similar to Task 2, but for login                           <span class="tag">P4</span>
+- 使用 AuthService.validateAndIssue()                       <span class="tag">P6</span>
+
+### Task 4: 邮箱验证
+- 处理各种 edge cases（重复邮箱 / 大小写 / 域名限制…）      <span class="tag">P2</span>
+- 添加错误处理                                              <span class="tag">P2</span></div>
+
+<div class="callout warn">
+  <div class="callout-label">如果这份 plan 交给 subagent，会发生什么</div>
+  <p>Task 1 里的 <code>TBD: 版本</code> → 第一个 subagent 会挑一个它训练时最常见的版本；Task 2 里的 <code>appropriate validation</code> → 第二个 subagent 会加一份它自己觉得合理的正则；Task 3 里的 <code>AuthService.validateAndIssue()</code> → 没有任何 task Produces 过它，第三个 subagent 只能自己造一个 —— 于是 Task 4 引用的又是另一个。</p>
+  <p><strong>结果：4 个 task 各自能编译过，但接口对不上，集成时炸。</strong></p>
+</div>
+
+<h2 data-num="Ⅵ">正面示例 · Task 2 重写</h2>
+
+<p>把 Task 2 按 <span class="skill">writing-plans</span> 的模板重写一遍，你会看到具体到什么程度：</p>
+
+<div class="good-plan">### Task 2: 注册接口的 email + password 校验
+
+**Files:**
+- Create: src/controllers/register.ts
+- Create: tests/controllers/register.test.ts
+
+**Interfaces:**
+- Consumes: (无 —— 这是第一个 controller)
+- Produces:
+  - `register(req: {email: string, password: string}) -> {ok: true, userId: string} | {ok: false, error: 'INVALID_EMAIL' | 'WEAK_PASSWORD'}`
+
+- [ ] **Step 1: 写失败测试（3 个 case）**
+
+```ts
+// tests/controllers/register.test.ts
+test('rejects email without @', async () => {
+  const r = await register({ email: 'foo', password: 'supersecret123' });
+  expect(r).toEqual({ ok: false, error: 'INVALID_EMAIL' });
+});
+test('rejects password shorter than 12 chars', async () => {
+  const r = await register({ email: 'a@b.co', password: 'short' });
+  expect(r).toEqual({ ok: false, error: 'WEAK_PASSWORD' });
+});
+test('accepts valid input and returns userId', async () => {
+  const r = await register({ email: 'a@b.co', password: 'supersecret123' });
+  expect(r.ok).toBe(true);
+  expect(typeof r.userId).toBe('string');
+});
+```
+
+- [ ] **Step 2: 跑测试确认失败**
+Run: `npm test -- tests/controllers/register.test.ts`
+Expected: 3 failures with "register is not a function"
+
+- [ ] **Step 3: 写最小实现**
+
+```ts
+// src/controllers/register.ts
+export async function register(req) {
+  if (!req.email.includes('@')) return { ok: false, error: 'INVALID_EMAIL' };
+  if (req.password.length < 12) return { ok: false, error: 'WEAK_PASSWORD' };
+  const userId = randomUUID();
+  await db.users.insert({ id: userId, email: req.email, hash: await bcrypt.hash(req.password, 12) });
+  return { ok: true, userId };
+}
+```
+
+- [ ] **Step 4: 跑测试确认通过**
+- [ ] **Step 5: Commit**
+```bash
+git add src/controllers/register.ts tests/controllers/register.test.ts
+git commit -m "feat(register): add email+password signup with validation"
+```</div>
+
+<p><strong>关键差异</strong>：</p>
+<ul>
+  <li>错误字符串（<code>INVALID_EMAIL</code>、<code>WEAK_PASSWORD</code>）被 <strong>显式列入 Produces</strong> —— 后面任何 task 引用它，都有出处（对 P6）</li>
+  <li>3 个测试 case 都写了代码 —— 规格 = 测试代码（对 P3、P5）</li>
+  <li>没有 "appropriate" / "handle edge cases" 这种词 —— 只有具体输入 + 具体断言（对 P2）</li>
+  <li>Step 5 里连 <code>git add</code> 的路径都写死了（对 P1）</li>
+</ul>
+
+<h2 data-num="Ⅶ">Self-Review 4 项（写完后必做）</h2>
+
+<p>SKILL.md 明列这 4 项，<strong>由 plan 作者自己 inline 完成</strong>（不是派 subagent 做）：</p>
+
+<table>
+  <thead><tr><th style="width:11rem">检查</th><th>问什么</th></tr></thead>
+  <tbody>
+    <tr><td>① Spec coverage</td><td>spec 里每条要求，能不能指到一个 task？列表化未覆盖项。</td></tr>
+    <tr><td>② Placeholder scan</td><td>整份 plan 扫一遍 P1–P6。</td></tr>
+    <tr><td>③ Type consistency</td><td>Task 3 叫 <code>clearLayers()</code>、Task 7 叫 <code>clearFullLayers()</code> = bug。签名前后必须一致。</td></tr>
+    <tr><td>④ Review Focus</td><td>spec 隐含的失败模式，每个都有对应 task 的测试覆盖了吗？空 section 意味着"我查了没有"，不是"我跳过了"。</td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <div class="callout-label">发现问题怎么办</div>
+  <p>Inline 改掉，<strong>不用再走一次 review</strong>。发现 spec 有要求但 plan 无 task → 补上 task。</p>
+</div>
+
+<h2 data-num="Ⅷ">Recall 练习</h2>
+
+<p style="font-size:0.92rem; color: var(--ink-soft);">Q1 是上一课 spacing（关于 pipeline 与执行模式）。Q2–Q5 是 P1–P6 的 pattern 识别。Q6 是布道场景。</p>
+
+<div class="quiz" data-quiz-id="l0003">
+
+  <div class="q" data-answer="1" data-explain="Subagent-driven 模式下每个 subagent 只看自己的 task，看不到别人的。Interfaces 块（Consumes/Produces）就是它们之间唯一的接口契约。">
+    <div class="q-number">Q1 · 复习 0002（spacing）</div>
+    <div class="q-text">在 subagent-driven 执行模式下，plan 里对<em>没上下文的 fresh subagent</em>最重要的一块是？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">Files 块，因为列了具体路径</button>
+      <button class="opt" data-i="1">Interfaces 块，因为跨 task 通信</button>
+      <button class="opt" data-i="2">Goal 段，因为它解释要做什么</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="2" data-explain="'Appropriate' / 'handle edge cases' 是品味词，零上下文读者无法定义 = P2。">
+    <div class="q-number">Q2 · 识别 P</div>
+    <div class="q-text">plan 里出现：<em>"Add appropriate validation for email."</em> —— 这属于哪种 plan 失败？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">P1 · TBD 型拖延</button>
+      <button class="opt" data-i="1">P3 · 无测试代码块</button>
+      <button class="opt" data-i="2">P2 · 空泛要求（品味词）</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="0" data-explain="code step 缺 code block = P5。测试代码尤其重要，因为测试就是规格。">
+    <div class="q-number">Q3 · 识别 P</div>
+    <div class="q-text">Step 里只写 <em>"Implement the handler logic"</em>，不给任何代码 —— 属于？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">P5 · 只描述不给代码</button>
+      <button class="opt" data-i="1">P4 · 相似引用了别的 task</button>
+      <button class="opt" data-i="2">P6 · 引用了未定义符号</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="1" data-explain="'Similar to Task N' 假设读者按顺序读，但 executor 可能乱序，所以必须重抄。">
+    <div class="q-number">Q4 · 识别 P</div>
+    <div class="q-text"><em>"Task 7: Similar to Task 2, but for user profile."</em> —— 为什么这是失败？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">因为 profile 类型没有定义</button>
+      <button class="opt" data-i="1">P4 · executor 可能乱序读 task</button>
+      <button class="opt" data-i="2">P2 · profile 是空泛没有具体词</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="2" data-explain="Self-review 4 项：Spec coverage · Placeholder scan · Type consistency · Review Focus。'Peer approval' 不在其中，集成决策是 Step 7 而非 plan 内部。">
+    <div class="q-number">Q5 · Self-review</div>
+    <div class="q-text">下列哪一项 <strong>不在</strong> writing-plans 官方 self-review 4 项检查里？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">Type consistency · 前后签名对齐</button>
+      <button class="opt" data-i="1">Placeholder scan · 扫 P1 到 P6</button>
+      <button class="opt" data-i="2">Peer approval · 同事签字确认</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="1" data-explain="最短反馈：这份 plan 里 TBD / 相似引用 / 空泛词 / 缺代码块几乎踩齐 → 全部退回重写。这才是 superpowers 的判断，不是'看起来 OK 就行'。">
+    <div class="q-number">Q6 · 布道（mission D）</div>
+    <div class="q-text">同事交来 plan 只写了三行：<em>"Task 1 建 API 骨架 / Task 2 加数据访问 / Task 3 完善错误处理"</em>。你怎么反馈最贴合 superpowers 哲学？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">"写得挺清爽，直接开始实现吧"</button>
+      <button class="opt" data-i="1">"六类 plan 失败几乎踩齐 · 请退回"</button>
+      <button class="opt" data-i="2">"先跑一次看效果 · plan 之后再补"</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+</div>
+
+<h2 data-num="Ⅸ">行动：30 分钟内做一次 plan 体检</h2>
+
+<div class="action">
+  <h3>Action Step · 手上有旧 plan 就用它，没有就现造</h3>
+  <p><strong>路径 A · 手上有旧 plan</strong>（比如你之前在某个项目里让 agent 生成过的 plan）：</p>
+  <ol>
+    <li>打开它，用<em>P1–P6 清单</em>逐行标注：找到每一个 TBD / "appropriate" / "similar to Task N" / "write tests for above" / 无 code block 的 code step / 未定义符号。</li>
+    <li>数一下总数。少于 3 处 → 你运气不错；多于 10 处 → 这就是 subagent 之前跑偏的原因。</li>
+    <li>挑其中<em>最刺眼</em>的一个 task，按 <a href="#Ⅶ">正面示例</a> 的格式重写它。贴给我看。</li>
+  </ol>
+  <p><strong>路径 B · 没有旧 plan</strong>：</p>
+  <ol>
+    <li>给你小产品随便挑一个真实 feature（比如"注册 endpoint"、"上传一张图片"）。</li>
+    <li>先按你自己的直觉写 3 个 task 的 plan —— <em>故意写松一点</em>。</li>
+    <li>自己走 P1–P6 扫一遍，把 5 个以上的失败改到最小可交付版本。</li>
+    <li>改前 + 改后都贴给我 —— 我会写 learning-record 0001 记录你的判断力。</li>
+  </ol>
+</div>
+
+<h2 data-num="Ⅹ">如何给同事讲这件事（评审用 · 3 分钟）</h2>
+
+<div class="callout ok">
+  <div class="callout-label">可复制到 team wiki 的一段话</div>
+  <p>"审一份 AI 或同事写的 implementation plan，你不需要读完全部代码。只要用眼睛扫这 <strong>4 个词组</strong>，就能判断它是不是"能交付"：</p>
+  <ul>
+    <li><code>TBD</code> / <code>TODO</code> / <code>implement later</code> —— 出现 = P1，退回。</li>
+    <li><code>appropriate</code> / <code>edge cases</code> / <code>as needed</code> —— 出现 = P2，退回。</li>
+    <li><code>Similar to Task N</code> —— 出现 = P4，退回。要求把代码重抄。</li>
+    <li><code>Write tests for the above</code> 但看不到测试代码 = P3，退回。</li>
+  </ul>
+  <p>这四条命中任意一条，你都可以<strong>不继续往下读</strong>：它还没准备好被 subagent 或新入职同事执行。改完再来。</p>
+  <p>反过来，一份合格的 plan 应该长这样：每个 task 有明确的 <em>Consumes / Produces</em>，每个 code step 有代码块，每个测试断言具体到字符串。看起来会<em>有点冗长</em> —— 那个冗长就是它能被交付的代价。</p>
+</div>
+
+<footer class="course-foot">
+  <div class="next-steps">
+    <h4>Primary Source</h4>
+    <p><a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/writing-plans/SKILL.md"><code>skills/writing-plans/SKILL.md</code></a> —— 特别是 <em>No Placeholders</em>、<em>Task Right-Sizing</em>、<em>Self-Review</em> 三节。本课所有 P1–P6 编号只是我为了教学方便加的记号，官方文本没有编号；官方定义的是"这些是 plan 失败"这件事本身。</p>
+    <h4 style="margin-top:1rem">延伸参考</h4>
+    <p><a href="../reference/writing-plans-checklist.html">writing-plans · 检查清单</a>（含完整骨架模板）· <a href="../reference/superpowers-pipeline.html">7 步流水线速查图</a></p>
+    <h4 style="margin-top:1rem">下一节预告</h4>
+    <p>0004 · <strong>Subagent vs Native</strong>：真正给你 3 个不同特征的 plan 场景，你选一个执行模式并<em>说清楚理由</em>。这是从"能写 plan"到"能让 agent 无人值守跑 2 小时"的关键。</p>
+    <h4 style="margin-top:1rem">有问题？</h4>
+    <p>把上面 Action Step 里"最刺眼的那一处"直接贴给我，或者贴一份<em>你项目里真实跑过</em>的 plan 让我一起扫 —— 具体场景下学最快。</p>
+  </div>
+</footer>
+
+</body>
+</html>

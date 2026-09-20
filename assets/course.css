@@ -1,0 +1,316 @@
+/* Superpowers teaching workspace — shared stylesheet
+ * Tufte-inspired: quiet paper, strong typography, print-friendly.
+ * All lessons and reference docs link this file.
+ */
+
+:root {
+  --paper: #fbf8f3;
+  --ink: #1a1814;
+  --ink-soft: #4a4640;
+  --rule: #d9d3c8;
+  --accent: #a8321e;         /* burnt sienna — for headings & emphasis */
+  --accent-soft: #f2e5df;
+  --code-bg: #f0ece3;
+  --ok: #2f6f3a;
+  --warn: #b8730a;
+  --bad: #a8321e;
+  --card-shadow: 0 1px 2px rgba(26, 24, 20, 0.06), 0 4px 12px rgba(26, 24, 20, 0.04);
+}
+
+* { box-sizing: border-box; }
+
+html { font-size: 17px; }
+body {
+  margin: 0;
+  padding: 3rem 1.5rem 6rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Iowan Old Style", "Charter", "Source Serif Pro", "Georgia", serif;
+  line-height: 1.62;
+  max-width: 46rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* --- Header --- */
+header.course-head {
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 1.25rem;
+  margin-bottom: 2.5rem;
+}
+.crumbs {
+  font-family: "Inter", -apple-system, "Segoe UI", sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 0.6rem;
+}
+.crumbs a { color: var(--accent); text-decoration: none; }
+.crumbs a:hover { text-decoration: underline; }
+h1 {
+  font-size: 2.1rem;
+  line-height: 1.2;
+  font-weight: 500;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.01em;
+}
+.subtitle {
+  color: var(--ink-soft);
+  font-style: italic;
+  margin: 0;
+  font-size: 1.02rem;
+}
+
+/* --- Section headings --- */
+h2 {
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin: 2.6rem 0 0.9rem 0;
+  letter-spacing: -0.005em;
+  color: var(--ink);
+}
+h2::before {
+  content: attr(data-num);
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  margin-right: 0.6rem;
+  font-weight: 400;
+}
+h3 { font-size: 1.1rem; font-weight: 600; margin: 1.8rem 0 0.5rem 0; }
+
+/* --- Body text --- */
+p { margin: 0 0 1rem 0; }
+strong { font-weight: 600; }
+em { font-style: italic; }
+a { color: var(--accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { text-decoration-thickness: 2px; }
+
+ul, ol { padding-left: 1.4rem; margin: 0 0 1rem 0; }
+li { margin-bottom: 0.35rem; }
+
+/* --- Inline code & blocks --- */
+code {
+  font-family: "JetBrains Mono", "SF Mono", Consolas, monospace;
+  font-size: 0.86em;
+  background: var(--code-bg);
+  padding: 0.1em 0.35em;
+  border-radius: 2px;
+}
+pre {
+  background: var(--code-bg);
+  padding: 0.9rem 1.1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  border-left: 3px solid var(--rule);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+pre code { background: none; padding: 0; font-size: inherit; }
+
+/* --- Skill / term chips --- */
+.skill {
+  font-family: "JetBrains Mono", "SF Mono", Consolas, monospace;
+  font-size: 0.82em;
+  background: var(--accent-soft);
+  color: var(--accent);
+  padding: 0.1em 0.45em;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+/* --- Callouts --- */
+.callout {
+  border-left: 3px solid var(--accent);
+  background: var(--accent-soft);
+  padding: 0.85rem 1.1rem;
+  margin: 1.5rem 0;
+  border-radius: 0 4px 4px 0;
+}
+.callout.warn { border-color: var(--warn); background: #fbf1de; }
+.callout.ok { border-color: var(--ok); background: #e8f0ea; }
+.callout-label {
+  display: inline-block;
+  font-family: "Inter", sans-serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+.callout.warn .callout-label { color: var(--warn); }
+.callout.ok .callout-label { color: var(--ok); }
+.callout p:last-child { margin-bottom: 0; }
+
+/* --- Three-path cards --- */
+.paths {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.9rem;
+  margin: 1.5rem 0;
+}
+.path-card {
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 1rem 1.1rem 1.1rem;
+  background: #fff;
+  box-shadow: var(--card-shadow);
+}
+.path-card h3 {
+  margin: 0 0 0.35rem 0;
+  font-size: 1.02rem;
+  font-family: "JetBrains Mono", monospace;
+  letter-spacing: -0.01em;
+}
+.path-card .tag {
+  font-family: "Inter", sans-serif;
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  display: block;
+  margin-bottom: 0.55rem;
+}
+.path-card.spike h3 { color: var(--ok); }
+.path-card.bounded h3 { color: var(--warn); }
+.path-card.arch h3 { color: var(--accent); }
+.path-card p { font-size: 0.88rem; margin-bottom: 0.4rem; line-height: 1.5; }
+.path-card .artifact {
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px dotted var(--rule);
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+  font-family: "Inter", sans-serif;
+}
+
+/* --- Table --- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.92rem;
+}
+th, td {
+  text-align: left;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+th {
+  font-family: "Inter", sans-serif;
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  border-bottom: 2px solid var(--ink-soft);
+}
+
+/* --- Quiz --- */
+.quiz {
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 1.2rem 1.4rem;
+  background: #fff;
+  margin: 1.4rem 0;
+  box-shadow: var(--card-shadow);
+}
+.quiz .q-number {
+  font-family: "Inter", sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 0.35rem;
+}
+.quiz .q-text { font-size: 1rem; margin-bottom: 0.9rem; font-weight: 500; }
+.quiz .opts { display: flex; flex-direction: column; gap: 0.4rem; }
+.quiz button.opt {
+  text-align: left;
+  padding: 0.55rem 0.9rem;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.94rem;
+  transition: background 0.1s;
+}
+.quiz button.opt:hover { background: var(--accent-soft); }
+.quiz button.opt.correct { background: #d9ecdc; border-color: var(--ok); color: var(--ok); font-weight: 600; }
+.quiz button.opt.wrong { background: #f5d9d0; border-color: var(--bad); color: var(--bad); }
+.quiz button.opt:disabled { cursor: default; opacity: 0.9; }
+.quiz .feedback {
+  margin-top: 0.85rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  display: none;
+}
+.quiz .feedback.show { display: block; }
+.quiz .feedback.ok { background: #e8f0ea; color: var(--ok); border-left: 3px solid var(--ok); }
+.quiz .feedback.bad { background: #f5d9d0; color: var(--bad); border-left: 3px solid var(--bad); }
+.quiz .score {
+  font-family: "Inter", sans-serif;
+  font-size: 0.85rem;
+  color: var(--ink-soft);
+  padding: 0.5rem 0;
+  border-top: 1px dashed var(--rule);
+  margin-top: 1rem;
+}
+
+/* --- Footer / meta --- */
+footer.course-foot {
+  margin-top: 4rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  font-family: "Inter", sans-serif;
+}
+footer.course-foot .next-steps { margin-bottom: 1rem; }
+footer.course-foot h4 {
+  font-family: "Inter", sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 0.5rem 0;
+}
+
+/* --- Action step block --- */
+.action {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 1.3rem 1.5rem;
+  border-radius: 6px;
+  margin: 2rem 0;
+}
+.action h3 {
+  color: var(--paper);
+  font-family: "Inter", sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin: 0 0 0.7rem 0;
+  opacity: 0.7;
+}
+.action p:last-child { margin-bottom: 0; }
+
+/* --- Print --- */
+@media print {
+  body { background: #fff; padding: 1rem; max-width: none; }
+  .quiz button.opt { display: none; }
+  .quiz .opts::after { content: "（打印版隐藏交互）"; font-style: italic; color: var(--ink-soft); }
+  .action { background: #eee; color: var(--ink); border: 1px solid var(--rule); }
+}
+
+/* --- Small screens --- */
+@media (max-width: 720px) {
+  html { font-size: 16px; }
+  body { padding: 2rem 1rem 4rem; }
+  .paths { grid-template-columns: 1fr; }
+  h1 { font-size: 1.7rem; }
+}

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Reference · Superpowers 7 步流水线</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+
+<header class="course-head">
+  <div class="crumbs">
+    <a href="../lessons/0002-seven-step-pipeline.html">Lesson 0002</a>
+    · Reference
+  </div>
+  <h1>Superpowers 7 步流水线 · 速查图</h1>
+  <p class="subtitle">一手来源：<a href="https://github.com/obra/superpowers#the-basic-workflow">README · The Basic Workflow</a>。当 pipeline 定义变化时以 README + 各 SKILL.md 为准。</p>
+</header>
+
+<h2 data-num="Ⅰ">七步一屏</h2>
+
+<table>
+  <thead>
+    <tr><th style="width:2.5rem">#</th><th style="width:11rem">Skill</th><th>激活时机</th><th>退出闸门（Artifact / 批准）</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td><span class="skill">brainstorming</span></td>
+      <td>写代码之前 · 永远第一个</td>
+      <td>三路路径各自批准：Spike=recommendation；Bounded=chat 短设计；Arch=已 review 的 spec 文件</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td><span class="skill">using-git-worktrees</span></td>
+      <td>设计批准之后</td>
+      <td>隔离工作区就绪 · 项目 setup 已跑 · <strong>测试基线全绿</strong></td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td><span class="skill">writing-plans</span></td>
+      <td>有已批准的设计</td>
+      <td>plan 文档 · 每个 task 是 2–5 分钟的一步 · 无占位符 · 用户选择执行方式</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td><span class="skill">subagent-driven-development</span> 或 <span class="skill">executing-plans</span></td>
+      <td>有已批准的 plan</td>
+      <td>Subagent：每 task 一个新 agent + 一次 review<br>Native：本 session 一把梭 + 最后整枝 review</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td><span class="skill">test-driven-development</span></td>
+      <td>第 4 步执行期间 · 每个 task 内</td>
+      <td>RED → GREEN → REFACTOR · 先看失败再看通过 · 提前写的代码删除</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td><span class="skill">requesting-code-review</span></td>
+      <td>Task 之间</td>
+      <td>对照 plan 评审 · 按严重性报问题 · Critical 阻塞下一步</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td><span class="skill">finishing-a-development-branch</span></td>
+      <td>所有 task 完成</td>
+      <td>整套测试重跑通过 · 呈现 3 选项菜单 · <strong>由人类选</strong>（merge / PR / keep）</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 data-num="Ⅱ">流水线不是直线</h2>
+
+<div class="callout">
+  <div class="callout-label">Step 4 · 5 · 6 是嵌套循环</div>
+  <p>Subagent / Native 是<em>外层策略</em>；TDD 和 code-review 是<em>每个 task 里</em>跑一次。<br>
+  不是"先做完所有 task，再补 TDD 和 review"。</p>
+</div>
+
+<h2 data-num="Ⅲ">Step 4 的岔路：Subagent vs Native</h2>
+
+<div class="paths" style="grid-template-columns: 1fr 1fr;">
+  <div class="path-card arch">
+    <span class="tag">Mode A · 最彻底</span>
+    <h3>subagent-driven-development</h3>
+    <p>每个 task 派一个<em>新</em> subagent 实现 · 实现完立刻派另一个 agent 评审 · 两阶段 review（spec 合规 → 代码质量）· 最后整枝 review。</p>
+    <p><strong>成本：</strong>每 task 一次 fresh context + 每次评审一次 fresh context。token 消耗最大。</p>
+    <p><strong>适合：</strong>task 间接口复杂 · 出错的代价高 · 需要长时段无人值守。</p>
+  </div>
+  <div class="path-card bounded">
+    <span class="tag">Mode B · 最省</span>
+    <h3>executing-plans (native)</h3>
+    <p>本 session 内一路把 task 全实现 · <em>最后</em>请一个更强模型的 reviewer 走一遍整枝。</p>
+    <p><strong>成本：</strong>只在结尾一次独立评审。</p>
+    <p><strong>适合：</strong>plan 已经把设计说透 · 中等模型也够用 · 独立性要求不那么高。</p>
+  </div>
+</div>
+
+<h2 data-num="Ⅳ">每一步的"退出闸门"为什么存在</h2>
+
+<table>
+  <thead><tr><th>Step</th><th>如果没有这一步，会出什么问题</th></tr></thead>
+  <tbody>
+    <tr><td>1 <span class="skill">brainstorming</span></td><td>Agent 直接猜你要什么 → 做出来的东西不是你要的。且没有 spec 文件作为团队共识锚。</td></tr>
+    <tr><td>2 <span class="skill">using-git-worktrees</span></td><td>失败改动污染主分支 · 中途 revert 昂贵 · 没有"测试基线全绿"意味着后续任何红色都不知道是新引入的还是本来就有的。</td></tr>
+    <tr><td>3 <span class="skill">writing-plans</span></td><td>Agent 走一步看一步 → 中途方向偏移无法察觉 · subagent 无法被"零基础"执行。</td></tr>
+    <tr><td>4 执行模式选择</td><td>要么过度使用 token（该 native 时用了 subagent），要么评审不足（该 subagent 时用了 native）。</td></tr>
+    <tr><td>5 <span class="skill">test-driven-development</span></td><td>"写完代码补测试"= 测试跟着实现走 · 只覆盖了你已经做对的部分。</td></tr>
+    <tr><td>6 <span class="skill">requesting-code-review</span></td><td>错误累积。第一个 task 判断错 → 后面所有 task 建立在错误接口上。</td></tr>
+    <tr><td>7 <span class="skill">finishing-a-development-branch</span></td><td>Agent 自作主张 merge / push / 丢弃 · 集成决策本属于人。</td></tr>
+  </tbody>
+</table>
+
+<h2 data-num="Ⅴ">异常诊断入口</h2>
+
+<p>当 session 表现不对（skill 没触发、agent 越闸门、烧 token 过快、重复劳动）→ 让 agent 调用 <span class="skill">diagnosing-superpowers</span>。它会读 session transcript · 报出行级证据 · 并可以打包脱敏 bundle 报到 GitHub Issues。</p>
+
+<footer class="course-foot">
+  <div class="next-steps">
+    <h4>Source of truth</h4>
+    <p>本表内容聚合自：<a href="https://github.com/obra/superpowers#the-basic-workflow">README · The Basic Workflow</a> 和 7 个对应 SKILL.md（<a href="https://github.com/obra/superpowers/tree/main/skills">skills/ @ main</a>）。任何一处冲突以 SKILL.md 为准。</p>
+    <h4 style="margin-top:1rem">相关参考</h4>
+    <p><a href="./brainstorming-paths.html">Brainstorming 三路分类</a>（Step 1 内部展开）</p>
+  </div>
+</footer>
+
+</body>
+</html>

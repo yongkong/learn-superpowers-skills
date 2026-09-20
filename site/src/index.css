@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 24% 98%;
+    --foreground: 30 15% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 30 15% 10%;
+    --primary: 10 66% 39%;
+    --primary-foreground: 40 24% 98%;
+    --secondary: 40 20% 92%;
+    --secondary-foreground: 30 15% 15%;
+    --muted: 40 15% 92%;
+    --muted-foreground: 30 8% 42%;
+    --accent: 10 66% 39%;
+    --accent-foreground: 40 24% 98%;
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 40 24% 98%;
+    --border: 40 15% 85%;
+    --input: 40 15% 85%;
+    --ring: 10 66% 39%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 30 15% 8%;
+    --foreground: 40 20% 96%;
+    --card: 30 12% 12%;
+    --card-foreground: 40 20% 96%;
+    --primary: 12 65% 55%;
+    --primary-foreground: 30 15% 8%;
+    --secondary: 30 10% 18%;
+    --secondary-foreground: 40 20% 92%;
+    --muted: 30 10% 18%;
+    --muted-foreground: 40 8% 62%;
+    --accent: 12 65% 55%;
+    --accent-foreground: 30 15% 8%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 40 20% 96%;
+    --border: 30 10% 22%;
+    --input: 30 10% 22%;
+    --ring: 12 65% 55%;
+  }
+
+  * { @apply border-border; }
+  html, body, #root { height: 100%; }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer utilities {
+  .paper {
+    background: hsl(var(--background));
+  }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+}

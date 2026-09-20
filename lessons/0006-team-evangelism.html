@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Lesson 0006 · 团队布道整合课</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+
+<header class="course-head">
+  <div class="crumbs">
+    Superpowers · Lesson 0006 · 约 18 分钟 · <a href="./0005-verification-gate.html">← 上一课</a>
+  </div>
+  <h1>团队布道：30 分钟把 superpowers 讲给同事</h1>
+  <p class="subtitle">整合课。你学到的不是新知识，是"如何把 0001–0005 讲给别人听 · 应对 5 种抵触 · 度量推行是否成功"。</p>
+</header>
+
+<h2 data-num="Ⅰ">使命 D 的终点检验</h2>
+
+<div class="callout">
+  <div class="callout-label">Why this lesson exists</div>
+  <p>你之前答 mission 时选了 "D · 带进 2-10 人小团队"。团队布道的失败方式非常固定：<strong>不是同事不聪明，是你没准备好他们要问的 5 个反驳。</strong>这一课把这些反驳列出来，配上应答。</p>
+</div>
+
+<h2 data-num="Ⅱ">30 分钟培训脚本</h2>
+
+<table>
+  <thead><tr><th style="width:5rem">时段</th><th>做什么</th><th>要点</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>0–5 min</td>
+      <td><strong>一个失败案例</strong></td>
+      <td>找一个大家都熟的 project · 展示一次"AI 帮我做但结果很烂"的具体片段。<em>不要一上来讲 superpowers。</em>先让所有人同意"直接让 AI 写代码确实有问题"。</td>
+    </tr>
+    <tr>
+      <td>5–15 min</td>
+      <td><strong>白板画 pipeline</strong></td>
+      <td>画 7 步流水线（0002）。每步一句话说它在解决什么失败。<strong>重点讲 Step 1 的三路分类</strong>（0001）—— 因为团队最容易问的"这么小也要写 spec"就是这里回答。</td>
+    </tr>
+    <tr>
+      <td>15–25 min</td>
+      <td><strong>Live demo</strong></td>
+      <td>用真实小需求（比如给内部工具加一个导出 CSV 按钮）跑一遍 <span class="skill">brainstorming</span>。让同事看到 agent 反问 —— 那一瞬间的惊讶是布道的最大杠杆。<em>不要跑完整条 pipeline，那要 2 小时。</em></td>
+    </tr>
+    <tr>
+      <td>25–30 min</td>
+      <td><strong>承诺 + 拒绝</strong></td>
+      <td>承诺：给一个"3 天试用窗口"，其间用 superpowers 干的所有活可以走回头路、允许失败。拒绝：<em>不承诺全公司 all-in</em>。给同事的最低行动：<em>"下次让 AI 帮你写代码时，先跑一次 brainstorming，就一步。"</em></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 data-num="Ⅲ">5 种团队抵触 · 应答</h2>
+
+<p>这些不是我编的，是 superpowers 引入团队时最典型的 5 句话。每一句对应一课的某个点。</p>
+
+<h3>抵触 1 · <em>"就这么个小活儿，也要走完整流程？"</em></h3>
+
+<div class="callout ok">
+  <div class="callout-label">应答（来自 0001）</div>
+  <p>"不需要。Superpowers 有<strong>三路分类</strong>：Spike · Bounded · Architectural。<strong>判据不是任务大小，是'这条流程现在在仓库里能读到吗？'</strong>能读到 → Bounded，chat 里两句话说清就可以直接动。读不到、要留下来的代码 → 那才是 Architectural。"</p>
+</div>
+
+<h3>抵触 2 · <em>"我 prompt 已经写得很清楚了，agent 直接干就完了。"</em></h3>
+
+<div class="callout ok">
+  <div class="callout-label">应答（来自 0003）</div>
+  <p>"Prompt 感觉'清楚'和 plan 真的'能被零上下文执行'是两回事。检验方法：你打开你的 prompt，扫这 4 个词组 —— <code>TBD</code> / <code>appropriate</code> / <code>similar to Task N</code> / <code>写测试处理上面那个</code>。任何一个出现 = 你其实没定完，只是<em>感觉</em>定完了。superpowers 的 plan 结构就是把这些逼出来。"</p>
+</div>
+
+<h3>抵触 3 · <em>"AI 说完成了，那就完成了呗，为什么我还要跑一遍？"</em></h3>
+
+<div class="callout ok">
+  <div class="callout-label">应答（来自 0005）</div>
+  <p>"因为 AI 会说 'tests pass' 但其实根本没跑过 —— 是它上一次 session 的记忆在骗它。Superpowers 有一条铁律：<strong>没有刚跑出来的证据，不许说完成。</strong>你作为 reviewer 只需要问一句：『最后一次 commit 之后你跑过测试吗？贴一下输出。』这一句能筛掉 80% 的假绿。"</p>
+</div>
+
+<h3>抵触 4 · <em>"这也太啰嗦了，效率明显降低。"</em></h3>
+
+<div class="callout ok">
+  <div class="callout-label">应答（来自 0002 + 0004）</div>
+  <p>"<strong>前 30 分钟</strong>是慢，因为你欠着 spec 和 plan。但一旦 plan 定完，subagent 可以<em>无人值守跑 2 小时</em> —— 这段时间你的效率是原来的 5-10 倍。整体看下来：<em>一次性大 feature 用 superpowers 更快；琐碎改动用 superpowers 更慢，那种时候直接改就好</em>。别拿错工具。"</p>
+</div>
+
+<h3>抵触 5 · <em>"subagent 听起来很高级，我们是不是所有活都开它？"</em></h3>
+
+<div class="callout ok">
+  <div class="callout-label">应答（来自 0004）</div>
+  <p>"反过来 —— subagent 不是更高级，是<em>更贵</em>。它烧 2× token 换两样东西：<em>task 之间通过 plan 的 Interfaces 块强制契约</em> · <em>每个 task 不被上一 task 的上下文污染</em>。什么时候用：Task ≥ 10 · 出错代价高 · 需要长时间无人值守。小 plan + 预算紧 → 用 native。"</p>
+</div>
+
+<h2 data-num="Ⅳ">度量：什么算"推行成功"</h2>
+
+<p>不要以"团队都装了 superpowers"为成功标准 —— 那只是安装量。真正的度量：<strong>行为变化</strong>。</p>
+
+<table>
+  <thead><tr><th>信号</th><th>说明什么</th><th>观察周期</th></tr></thead>
+  <tbody>
+    <tr><td>同事提交 PR 时描述里贴了测试运行输出</td><td>Verification Iron Law 内化了</td><td>2 周</td></tr>
+    <tr><td>有人在群里说 "这是 Bounded 还是 Architectural？"</td><td>三路分类成了团队词汇</td><td>1 个月</td></tr>
+    <tr><td>同事主动问 "这次要不要 subagent？"</td><td>执行模式成为决策项</td><td>1-2 个月</td></tr>
+    <tr><td>新人第一天就能用 <span class="skill">brainstorming</span> 独立跑一个 feature</td><td>整套方法成了默认路径</td><td>3 个月</td></tr>
+    <tr><td>同事开始质疑<strong>你的</strong> plan 里的 P1-P6</td><td>布道完成 —— 团队有了共同品味</td><td>3-6 个月</td></tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <div class="callout-label">最不应该追的指标</div>
+  <p>不要追 "每人日均 AI 生成代码行数" —— 那会激励跳过 pipeline。<strong>追 "bug 从发现到修复的时间"</strong>：superpowers 的 TDD + verification 会把这个数字压下去。这才是团队老板会认的 KPI。</p>
+</div>
+
+<h2 data-num="Ⅴ">Demo 脚本：现场跑 brainstorming</h2>
+
+<p>培训第 15 分钟那段 demo，用下面这个脚本可以<em>几乎必然</em>让同事"哦"一声：</p>
+
+<ol>
+  <li>打开 Claude Code / Qoder · 已安装 superpowers</li>
+  <li>输入这句话（<strong>不要改</strong>）：<br><code>让我们做一个 React 的 TODO 列表</code></li>
+  <li>什么都不做。让 agent 自己触发 <span class="skill">brainstorming</span>。</li>
+  <li>同事会看到 agent：<br>
+      · 说 "this looks <strong>architectural</strong>, so I'll..." —— 三路分类的显式口播<br>
+      · 反问一个关于 purpose 的问题（不是马上写代码）<br>
+      · 一次只问一个问题</li>
+  <li>关键讲解点：<em>"你注意到它没直接开始写吗？它先做了分类，然后开始问问题。这一步就是 superpowers 全部价值的入口。"</em></li>
+</ol>
+
+<div class="callout">
+  <div class="callout-label">Demo 之前必做的准备</div>
+  <p>确保你的 superpowers 是最新版的（README 提到 <em>验证方式</em>：fresh session 输入 "Let's make a react todo list" 会自动触发 brainstorming）。如果没触发，先跑 <span class="skill">diagnosing-superpowers</span> 修好，别在同事面前翻车。</p>
+</div>
+
+<h2 data-num="Ⅵ">Recall 练习 · 只有 4 题</h2>
+
+<p style="font-size:0.92rem; color: var(--ink-soft);">本课是整合课，quiz 只测关键判断，不测细节。</p>
+
+<div class="quiz" data-quiz-id="l0006">
+
+  <div class="q" data-answer="0" data-explain="培训前 5 分钟应该讲一个失败案例（不用 superpowers），让所有人先同意'问题存在'。跳过这一步 = 直接推销 = 抵触加倍。">
+    <div class="q-number">Q1 · 培训开场</div>
+    <div class="q-text">30 分钟团队培训 · 前 5 分钟最应该做什么？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">讲一个"直接让 AI 写"的失败案例</button>
+      <button class="opt" data-i="1">介绍 superpowers 的作者和社区规模</button>
+      <button class="opt" data-i="2">演示 7 步流水线的完整一次跑通</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="2" data-explain="三路分类正是回答这个问题的 —— 判据看仓库不看大小，同事的'太小不必'直觉是被'熟悉度=简单'误导。">
+    <div class="q-number">Q2 · 抵触应答</div>
+    <div class="q-text">同事说："加个字段这种活也要走完整流程？" 你的最佳回应调用哪一课？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">0005 · Verification Before Completion</button>
+      <button class="opt" data-i="1">0004 · Subagent vs Native 的取舍</button>
+      <button class="opt" data-i="2">0001 · Brainstorming 三路分类</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="1" data-explain="'日均 AI 生成代码行数' 会反向激励跳过 pipeline。团队真正应该追的是端到端周期时间，superpowers 会让这个变好。">
+    <div class="q-number">Q3 · 度量</div>
+    <div class="q-text">团队推 superpowers 3 个月后，下列哪个指标是<em>反</em>模式（不该追）？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">Bug 平均修复时间是否缩短</button>
+      <button class="opt" data-i="1">每人日均 AI 生成代码行数</button>
+      <button class="opt" data-i="2">新人独立跑通一个 feature 的天数</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="0" data-explain="Demo 之前必须先验证：新 session + 那句话能触发 brainstorming。如果没触发，先在同事面前跑 diagnosing-superpowers 反而更糟。">
+    <div class="q-number">Q4 · 布道（mission D）</div>
+    <div class="q-text">培训前一天，你为现场 demo 最应该做的准备：</div>
+    <div class="opts">
+      <button class="opt" data-i="0">跑一次 fresh session 验证能触发</button>
+      <button class="opt" data-i="1">把 7 个 SKILL.md 都读一遍背下来</button>
+      <button class="opt" data-i="2">准备一段备用 PPT 万一 demo 挂</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+</div>
+
+<h2 data-num="Ⅶ">行动：排出你的 30 分钟培训</h2>
+
+<div class="action">
+  <h3>Action Step · 30 分钟准备</h3>
+  <ol>
+    <li>打开日历 · <strong>定一个真实的时间</strong>（不是"以后再说"）· 未来 2-4 周内 · 团队 30 分钟。</li>
+    <li>填这四栏：<br>
+      · <strong>失败案例</strong>（0-5min）：具体到哪个 sprint、哪个 PR、当时谁的判断。<br>
+      · <strong>Demo 需求</strong>（15-25min）：现场要跑的那一句 prompt 是什么。<br>
+      · <strong>试用承诺</strong>（25-30min）：给团队多长的试用期？失败允许走回头路吗？<br>
+      · <strong>度量约定</strong>：30 天后你打算问同事哪 3 个问题判断是否推行成功？</li>
+    <li>把这份填好的 1-pager 打印或存成 wiki 页面 —— <a href="../reference/evangelism-1pager.html">参考模板</a>。</li>
+    <li>把这份计划贴给我 —— 我会给你 feedback + 写 learning-record。</li>
+  </ol>
+</div>
+
+<h2 data-num="Ⅷ">整个课程的收束</h2>
+
+<p>你现在有的：</p>
+<ul>
+  <li><strong>0001</strong> 三路分类：让"要不要走流程"这个问题有具体判据</li>
+  <li><strong>0002</strong> 7 步流水线：一张地图</li>
+  <li><strong>0003</strong> No Placeholders：让 plan 从"看起来对"到"能交付"</li>
+  <li><strong>0004</strong> Subagent vs Native：无人值守跑长活 vs 快速跑短活</li>
+  <li><strong>0005</strong> Verification Iron Law：证据先于声明</li>
+  <li><strong>0006</strong> 团队布道整合：怎么把前 5 课讲给同事</li>
+</ul>
+
+<p>你的下一步不是"再学更多 skill"。<strong>下一步是执行 0006 里那份培训 + 开始用 superpowers 跑你自己的小产品</strong>。跑到具体卡住的时候回来问我，那才是有效学习的信号 —— 而不是继续囤课。</p>
+
+<footer class="course-foot">
+  <div class="next-steps">
+    <h4>本课整合的所有源</h4>
+    <ul>
+      <li><a href="https://github.com/obra/superpowers">README · obra/superpowers</a></li>
+      <li>0001 · <a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/brainstorming/SKILL.md">brainstorming</a></li>
+      <li>0002 · <a href="https://github.com/obra/superpowers#the-basic-workflow">Basic Workflow</a></li>
+      <li>0003 · <a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/writing-plans/SKILL.md">writing-plans</a></li>
+      <li>0004 · <a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/subagent-driven-development/SKILL.md">subagent-driven-development</a></li>
+      <li>0005 · <a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/verification-before-completion/SKILL.md">verification-before-completion</a></li>
+    </ul>
+    <h4 style="margin-top:1rem">延伸参考</h4>
+    <p><a href="../reference/evangelism-1pager.html">团队布道 1-pager 模板（打印版）</a> · <a href="../reference/superpowers-pipeline.html">7 步流水线速查图</a> · <a href="../reference/brainstorming-paths.html">三路分类速查表</a> · <a href="../reference/writing-plans-checklist.html">writing-plans 检查清单</a> · <a href="../reference/execution-modes.html">执行模式决策表</a></p>
+    <h4 style="margin-top:1rem">课程之后</h4>
+    <p>这不是终点，是训练结束、真正的项目开始。带着你实跑中遇到的问题回来 —— 每个真问题都会变成一份新的 learning record 和一个更精确的 mission。</p>
+  </div>
+</footer>
+
+</body>
+</html>

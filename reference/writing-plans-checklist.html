@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Reference · writing-plans 检查清单</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+
+<header class="course-head">
+  <div class="crumbs">
+    <a href="../lessons/0003-no-placeholders.html">Lesson 0003</a>
+    · Reference
+  </div>
+  <h1>writing-plans · 检查清单</h1>
+  <p class="subtitle">一手来源：<a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/writing-plans/SKILL.md">skills/writing-plans/SKILL.md</a></p>
+</header>
+
+<h2 data-num="Ⅰ">读者画像（一句话）</h2>
+
+<div class="callout">
+  <div class="callout-label">Assume</div>
+  <p>Plan 的假想读者：<em>"a skilled developer, but knows almost nothing about our toolset or problem domain. Assume they don't know good test design very well."</em></p>
+  <p>翻译成中文：<strong>技术过硬 · 上下文为零 · 品味可疑 · 讨厌写测试的实习生</strong>。他/她只会照着你写的做，不会替你做判断。</p>
+</div>
+
+<h2 data-num="Ⅱ">Plan 文档结构（骨架）</h2>
+
+<pre><code># [Feature Name] Implementation Plan
+
+&gt; **For agentic workers:** REQUIRED SUB-SKILL:
+&gt;   Use superpowers:subagent-driven-development (recommended)
+&gt;   or superpowers:executing-plans to implement this plan
+&gt;   task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** [一句话说清做出什么]
+**Architecture:** [2-3 句技术方案]
+**Tech Stack:** [关键依赖]
+**Spec:** [指向已批准的 spec 文件路径]
+
+## Global Constraints
+[项目级红线：版本下限 / 依赖限制 / 命名规范 / 平台要求 —— 每条一行，
+ 从 spec 一字不差 copy]
+
+## Review Focus
+[spec 隐含但没 task 显式覆盖、最容易坑人的 5 类输入 / 失败模式 —— 每条一行]
+
+---
+
+### Task N: [组件名]
+
+**Files:**
+- Create: `exact/path/to/file.py`
+- Modify: `exact/path/to/existing.py:123-145`
+- Test:   `tests/exact/path/to/test.py`
+
+**Interfaces:**
+- Consumes: [此 task 用到前面 task 的什么 · 精确签名]
+- Produces: [后面 task 依赖此 task 的什么 · 精确函数名/参数/返回]
+
+- [ ] **Step 1: Write the failing test**
+      ```python
+      def test_specific_behavior(): ...
+      ```
+- [ ] **Step 2: Run test to verify it fails**
+      Run: `pytest tests/... -v`
+      Expected: FAIL with "..."
+- [ ] **Step 3: Write minimal implementation**
+      ```python
+      def function(input): ...
+      ```
+- [ ] **Step 4: Run test to verify it passes**
+- [ ] **Step 5: Commit**
+      ```bash
+      git add ... && git commit -m "feat: ..."
+      ```</code></pre>
+
+<h2 data-num="Ⅲ">Task 粒度：2-5 分钟一步</h2>
+
+<p>一个 step = 一个动作。参考切法：</p>
+<ul>
+  <li>"写失败的测试" —— 一步</li>
+  <li>"跑测试确认它失败" —— 一步</li>
+  <li>"写最小实现" —— 一步</li>
+  <li>"跑测试确认通过" —— 一步</li>
+  <li>"commit" —— 一步</li>
+</ul>
+
+<p><strong>Task 边界原则</strong>（Task Right-Sizing）：把 setup / config / scaffolding / docs 折进它服务的 deliverable 所在 task；只在"评审者可能批准 A 但否决 B"的地方拆 task。每个 task 以一个可独立测试的 deliverable 结尾。</p>
+
+<h2 data-num="Ⅳ">No Placeholders · 六种 plan 失败</h2>
+
+<table>
+  <thead><tr><th style="width:6rem">编号</th><th style="width:16rem">症状（原文样本）</th><th>为什么是失败</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>P1 · TBD</td>
+      <td><code>"TBD"</code> / <code>"TODO"</code> / <code>"implement later"</code> / <code>"fill in details"</code></td>
+      <td>把决策成本推给读者，等于没写。</td>
+    </tr>
+    <tr>
+      <td>P2 · 空泛</td>
+      <td><code>"Add appropriate error handling"</code> / <code>"add validation"</code> / <code>"handle edge cases"</code></td>
+      <td>"appropriate" 是品味词，零上下文读者无法定义。必须写出<em>具体</em>错误、<em>具体</em>输入、<em>具体</em>断言。</td>
+    </tr>
+    <tr>
+      <td>P3 · 无测试代码</td>
+      <td><code>"Write tests for the above"</code>（不带测试代码块）</td>
+      <td>测试设计是 plan 的核心，不是可选附件。没代码 = 没规格。</td>
+    </tr>
+    <tr>
+      <td>P4 · 相似引用</td>
+      <td><code>"Similar to Task N"</code></td>
+      <td>Executor 可能<em>乱序</em>读 task。要重抄代码 —— 冗余 ≠ 错误。</td>
+    </tr>
+    <tr>
+      <td>P5 · 只描述不给码</td>
+      <td>步骤说"做什么"但没有 code block 说"怎么做"</td>
+      <td>Code step 必须含 code block。描述性语言无法保证精确性。</td>
+    </tr>
+    <tr>
+      <td>P6 · 未定义符号</td>
+      <td>引用了任何 task 都没定义的 类型 / 函数 / 方法</td>
+      <td>接口的存在必须被某处 Produces 声明。凭空引用 = 幻觉。</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 data-num="Ⅴ">Self-Review 4 项（写完后自查）</h2>
+
+<p>SKILL.md 明列这 4 项 —— <strong>不是可选题</strong>。由你自己 inline 检查，不派 subagent：</p>
+
+<ol>
+  <li><strong>Spec coverage</strong>：spec 里每条要求，能不能指到一个 task 实现它？列表化未覆盖项。</li>
+  <li><strong>Placeholder scan</strong>：整份 plan 扫一遍 6 种失败（P1–P6）。</li>
+  <li><strong>Type consistency</strong>：Task 3 里叫 <code>clearLayers()</code>，Task 7 叫 <code>clearFullLayers()</code> = bug。前后签名必须一致。</li>
+  <li><strong>Review Focus</strong>：spec 隐含的失败模式，是否每个都有一 task 覆盖？空 section 意味着"我查了没有"，不是"我跳过了"。</li>
+</ol>
+
+<div class="callout warn">
+  <div class="callout-label">修 Just-in-time</div>
+  <p>Self-review 发现问题 → <strong>inline 改掉，不用再走一次 review</strong>。发现 spec 有要求但 plan 无 task → 补上 task。</p>
+</div>
+
+<h2 data-num="Ⅵ">Execution Handoff（Step 4 岔路）</h2>
+
+<p>Plan 保存后，agent 会让你在两种执行方式里选：<strong>Subagent-driven</strong>（每 task fresh agent + fresh reviewer + 最后整枝 review · 最彻底 · 最贵）或 <strong>Native</strong>（本 session 一路推完 + 最后整枝 review · 最省）。选前 agent 应给出<em>基于此 plan 具体特征</em>的推荐（依赖密度 · task 数 · 出错代价）。</p>
+
+<p><em>这也是为什么 <strong>Interfaces</strong> 块（Consumes/Produces）在 subagent 模式下几乎是 plan 的生死线</em> —— 每个 fresh subagent 只看到自己那一个 task，别的都看不到。没有 Interfaces 块，它们就没办法对齐接口签名。</p>
+
+<footer class="course-foot">
+  <div class="next-steps">
+    <h4>Source of truth</h4>
+    <p>本表内容回溯至 <a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/writing-plans/SKILL.md"><code>skills/writing-plans/SKILL.md</code> @ main</a>。</p>
+    <h4 style="margin-top:1rem">相关参考</h4>
+    <p><a href="./superpowers-pipeline.html">7 步流水线速查图</a>（本课是 Step 3 内部展开）· <a href="./brainstorming-paths.html">Brainstorming 三路分类</a>（Step 1，其 Architectural 路径的 spec 是 plan 的输入）</p>
+  </div>
+</footer>
+
+</body>
+</html>

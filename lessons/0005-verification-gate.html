@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Lesson 0005 · Verification Before Completion</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/course.css">
+<script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+
+<header class="course-head">
+  <div class="crumbs">
+    Superpowers · Lesson 0005 · 约 12 分钟 · <a href="./0004-execution-mode.html">← 上一课</a>
+  </div>
+  <h1>Verification Before Completion：证据先于声明</h1>
+  <p class="subtitle">Agent 说"搞定！测试通过！" —— 它跑过吗？没跑过 = 在骗你，哪怕它自己没意识到。</p>
+</header>
+
+<h2 data-num="Ⅰ">为什么这一课最"轻"却最重要</h2>
+
+<div class="callout">
+  <div class="callout-label">Mission tie-in</div>
+  <p><strong>使命 A</strong>：小产品能上线的前提是 —— 你说"能上线"这件事本身是<strong>可验证</strong>的。Verification 不是流程洁癖，是把"我以为好了"变成"这是刚刚跑出来的日志"。</p>
+  <p><strong>使命 D</strong>：团队里 AI 生成的 PR 最大风险不是"代码写得烂"，是"看起来完成了其实根本没跑过测试"。这一课的 Iron Law 是团队 PR review 的第一条规则。</p>
+</div>
+
+<h2 data-num="Ⅱ">Iron Law</h2>
+
+<div class="action" style="background: var(--bad); padding: 1.2rem 1.4rem;">
+  <h3 style="color: #fff; opacity: 0.85;">The Iron Law</h3>
+  <p style="font-family: 'JetBrains Mono', monospace; font-size: 1.05rem; line-height: 1.5; margin: 0;">
+    NO COMPLETION CLAIMS<br>WITHOUT FRESH VERIFICATION EVIDENCE
+  </p>
+  <p style="margin-top: 0.9rem; font-size: 0.9rem; opacity: 0.85;">
+    如果你<em>本条消息内</em>没跑过验证命令，你不能声称它通过。
+  </p>
+</div>
+
+<p>注意"fresh"（新鲜）：<strong>上一轮跑过不算数</strong>。你刚改了 3 个文件，之前那次绿色测试已经过期了。</p>
+
+<h2 data-num="Ⅲ">Gate Function：5 步流程</h2>
+
+<p>任何"我状态如何 / 我很满意 / 搞定了"的表达之前，必须先走完 5 步：</p>
+
+<ol style="line-height:1.9;">
+  <li><strong>IDENTIFY</strong>：什么命令能证明这个声明？</li>
+  <li><strong>RUN</strong>：完整跑一遍（fresh、不缓存、不跳过）</li>
+  <li><strong>READ</strong>：读完整输出 · 看 exit code · 数 failures</li>
+  <li><strong>VERIFY</strong>：输出真的支持这个声明吗？<br>
+      · 不支持 → 说实际状态 + 证据<br>
+      · 支持 → 声明 + 证据一起说</li>
+  <li><strong>ONLY THEN</strong>：做出这个声明</li>
+</ol>
+
+<div class="callout warn">
+  <div class="callout-label">跳过任何一步 = 撒谎</div>
+  <p>SKILL.md 原文：<em>"Skip any step = lying, not verifying."</em> 语气很重。因为 AI agent 最常见的失败不是"跑不过"，是"<em>以为自己跑过了</em>"。</p>
+</div>
+
+<h2 data-num="Ⅳ">常见失败对照表</h2>
+
+<table>
+  <thead><tr><th>声明</th><th>需要什么证据</th><th>什么不算数</th></tr></thead>
+  <tbody>
+    <tr><td>"测试通过"</td><td>测试命令输出：0 failures</td><td>上一次跑过 · "应该会过"</td></tr>
+    <tr><td>"linter 干净"</td><td>linter 输出：0 errors</td><td>只跑了部分文件 · 靠推测</td></tr>
+    <tr><td>"build 成功"</td><td>build 命令：exit 0</td><td>linter 过了（≠ 编译过） · 日志看着没事</td></tr>
+    <tr><td>"bug 已修"</td><td>原症状的复现命令：现在 pass</td><td>改了代码 · 假设修好了</td></tr>
+    <tr><td>"回归测试有效"</td><td>Red-Green 双向验证 · revert 后必须 fail</td><td>测试通过一次（可能是 false green）</td></tr>
+    <tr><td>"subagent 完成了"</td><td>VCS diff 显示改动</td><td>Agent 自报 success</td></tr>
+    <tr><td>"需求都满足了"</td><td>逐条 plan checklist 对照验证</td><td>"测试通过 = phase 完成"</td></tr>
+  </tbody>
+</table>
+
+<h2 data-num="Ⅴ">Red Flags · 一句话识别</h2>
+
+<p>任何下列念头出现 → <strong>停</strong>：</p>
+<ul>
+  <li>你正在说 "should"、"probably"、"seems to"、"看起来"</li>
+  <li>验证还没跑就已经在 "Great!" / "Perfect!" / "Done!"</li>
+  <li>即将 commit / push / 提 PR 但没跑验证</li>
+  <li>相信 subagent 的自报"成功"</li>
+  <li>只跑了部分验证但打算声称全部通过</li>
+  <li>"就这一次"心态</li>
+  <li>你累了，想赶紧收工</li>
+</ul>
+
+<div class="callout warn">
+  <div class="callout-label">最阴险的一条</div>
+  <p><em>"用了不同的措辞所以规则不适用。"</em> —— 不对。Iron Law 覆盖 <strong>字面 / 换词 / 隐含的成功暗示</strong>。你说"这版应该可以上线了"= 你在做完成声明 = 需要证据。</p>
+</div>
+
+<h2 data-num="Ⅵ">对 AI agent 特别重要的两条</h2>
+
+<h3>① 不要相信 subagent 的 "success report"</h3>
+<p>Subagent 会说："我做完了 · 测试通过"。<strong>那是它的自报</strong>。Verification 要求你去 <code>git log</code> 看 commit · 去跑一遍测试 · 看 diff。SKILL.md：<em>"Agent completed → VCS diff shows changes · Not Sufficient: Agent reports success."</em></p>
+
+<h3>② Regression test 必须双向验证</h3>
+<p>只看到测试通过<strong>不能证明它能捕获 bug</strong>。真正的做法：</p>
+<pre><code>写测试 → 跑（通过）
+revert fix → 跑（必须 FAIL） ← 这步不做 = 你不知道测试是不是 false green
+restore fix → 跑（通过）</code></pre>
+<p>少了中间那一步，测试只是"跟着代码跑绿灯"，没有保护力。</p>
+
+<h2 data-num="Ⅶ">Recall 练习</h2>
+
+<p style="font-size:0.92rem; color: var(--ink-soft);">Q1 复习 0004（subagent 相关）。Q2–Q6 关于本课。</p>
+
+<div class="quiz" data-quiz-id="l0005">
+
+  <div class="q" data-answer="1" data-explain="Subagent 只会在 4 种情况下真停下来问你（不可逆/安全/跨 worktree 副作用/plan 烂）。其他情况它自己裁决+继续。">
+    <div class="q-number">Q1 · 复习 0004（spacing）</div>
+    <div class="q-text">Subagent 跑起来时，遇到 plan 里的普通冲突，它会主动停下来问人类吗？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">会 · 它必须每一步都请示</button>
+      <button class="opt" data-i="1">不会 · 除非命中 4 个 stop 条件</button>
+      <button class="opt" data-i="2">会 · 因为这是它的核心设计</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="2" data-explain="Agent 自报 success 不能作数。Verification 要求你去 VCS diff + 实际跑测试独立确认。">
+    <div class="q-number">Q2 · 独立验证</div>
+    <div class="q-text">Subagent 报告："Task 5 完成 · 测试全绿"。你的下一步：</div>
+    <div class="opts">
+      <button class="opt" data-i="0">进入 Task 6 · 相信它的报告</button>
+      <button class="opt" data-i="1">先让它写 commit message 再说</button>
+      <button class="opt" data-i="2">看 git diff · 自己跑一遍测试</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="0" data-explain="'should' 是典型红旗。你还没跑 = 不能做完成声明。">
+    <div class="q-number">Q3 · Red Flag 识别</div>
+    <div class="q-text">同事在群里说："我改了那个 bug，<strong>应该</strong>不会再报错了。" —— 这属于：</div>
+    <div class="opts">
+      <button class="opt" data-i="0">红旗 · 未验证的完成声明</button>
+      <button class="opt" data-i="1">正常 · 谨慎表达不是声明</button>
+      <button class="opt" data-i="2">红旗 · 但他已经改代码了没事</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="1" data-explain="Regression test 必须双向：通过 → revert 让它失败 → restore 让它通过。少了中间那步 = false green。">
+    <div class="q-number">Q4 · Regression 双向</div>
+    <div class="q-text">你为修好的 bug 写了一个回归测试 · 它现在 pass。这能证明测试真的有效吗？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">能 · 只要 pass 就说明它 work</button>
+      <button class="opt" data-i="1">不能 · 还要 revert 让它 fail 才算</button>
+      <button class="opt" data-i="2">能 · 前提是测试跑得足够快</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="2" data-explain="Linter 只检查代码风格，不检查编译。Build pass 必须是 build 命令本身 exit 0。">
+    <div class="q-number">Q5 · 常见偷换</div>
+    <div class="q-text">"Linter 过了，所以 build 也一定过。" 这个推理违反什么？</div>
+    <div class="opts">
+      <button class="opt" data-i="0">违反 · 但差别很小可以通融</button>
+      <button class="opt" data-i="1">没违反 · Linter 覆盖所有语法</button>
+      <button class="opt" data-i="2">违反 · Linter 与编译器不等价</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+  <div class="q" data-answer="1" data-explain="'fresh' = 本条消息内。之前跑过不算，因为你可能已经改了几个文件。">
+    <div class="q-number">Q6 · 布道（mission D）</div>
+    <div class="q-text">团队 PR review 时，作者写 "tests pass"。你作为 reviewer 最应该问：</div>
+    <div class="opts">
+      <button class="opt" data-i="0">"CI 上有绿色的历史链接吗？"</button>
+      <button class="opt" data-i="1">"最后一条 commit 后跑过完整测试吗？"</button>
+      <button class="opt" data-i="2">"你能不能口头描述一下测试逻辑？"</button>
+    </div>
+    <div class="feedback"></div>
+  </div>
+
+</div>
+
+<h2 data-num="Ⅷ">行动：审计你的最近一次 session</h2>
+
+<div class="action">
+  <h3>Action Step · 10 分钟</h3>
+  <p>1. 打开你最近一次让 agent 帮你写代码的 session 记录（或你自己最近 3 条 commit）。</p>
+  <p>2. 找 <strong>3 处 "未验证的成功声明"</strong>：任何"看起来 / 应该 / 搞定了 / 完美"的措辞，但<em>没有</em>紧跟一条实际跑过的命令输出。</p>
+  <p>3. 对每一处问自己：<em>如果这个 bug 上线，成本是什么？</em></p>
+  <p>4. 把 3 处发现写下来 —— 会成为 learning-record。之后你的默认反应会从"agent 说完成 → 我信"改成"agent 说完成 → 我要求证据"。</p>
+</div>
+
+<h2 data-num="Ⅸ">如何给同事讲这件事</h2>
+
+<div class="callout ok">
+  <div class="callout-label">可复制到 team wiki 的一段话</div>
+  <p>"Superpowers 里有一条铁律：<strong>没有刚跑出来的证据，不许说完成。</strong>具体到工程习惯就三句：</p>
+  <ul>
+    <li>任何 'should / probably / 看起来 / 应该 ok 了' = 红旗，说明还没跑。</li>
+    <li>AI 报告"我完成啦"不算证据 —— 去看 git diff、去本地跑测试。</li>
+    <li>回归测试必须能<em>真的失败</em>（revert 修复 → 测试必须变红）才算它有效。</li>
+  </ul>
+  <p>PR review 时，你只需要问作者一句：<em>『最后一次 commit 之后你跑过测试吗？贴一下输出。』</em> 一句话筛掉 80% 的假绿。"</p>
+</div>
+
+<footer class="course-foot">
+  <div class="next-steps">
+    <h4>Primary Source</h4>
+    <p><a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/verification-before-completion/SKILL.md"><code>skills/verification-before-completion/SKILL.md</code></a> —— 短小但每个字都有用。特别看 <em>Gate Function</em>、<em>Common Failures</em> 表、<em>Key Patterns</em>。</p>
+    <h4 style="margin-top:1rem">下一节预告</h4>
+    <p>0006 · <strong>团队布道整合课</strong>：把 0001–0005 打散重组成一份 <em>30 分钟培训 · 白板脚本 · 5 种团队抵触应答</em>。这一课不是新知识，是让你能<em>教别人</em>。</p>
+  </div>
+</footer>
+
+</body>
+</html>

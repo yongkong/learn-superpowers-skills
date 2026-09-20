@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Reference · Brainstorming 三路分类</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/course.css">
+</head>
+<body>
+
+<header class="course-head">
+  <div class="crumbs">
+    <a href="../lessons/0001-choose-your-path.html">Lesson 0001</a>
+    · Reference
+  </div>
+  <h1>Brainstorming 三路分类 · 速查表</h1>
+  <p class="subtitle">Spike / Bounded / Architectural —— 一手来源：<a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/brainstorming/SKILL.md">skills/brainstorming/SKILL.md</a></p>
+</header>
+
+<h2 data-num="Ⅰ">三路卡片</h2>
+
+<div class="paths">
+  <div class="path-card spike">
+    <span class="tag">Path A</span>
+    <h3>Spike</h3>
+    <p><strong>输出是答案，不是代码。</strong></p>
+    <p>触发词："能不能……"、"试试是否……"、"quick and dirty is fine"。</p>
+    <p>做法：2-3 句说清 probe，用户点头就跑；产物是 recommendation。</p>
+    <div class="artifact">Artifact：口头/一段文字结论。所有代码标 <em>throwaway</em>。</div>
+  </div>
+
+  <div class="path-card bounded">
+    <span class="tag">Path B</span>
+    <h3>Bounded</h3>
+    <p><strong>改动的是仓库里已有的流程。</strong></p>
+    <p>加个 flag、加个小 endpoint、单文件 fix。前提：这条流"已经在这里可以读"。</p>
+    <p>做法：问几个关键问题 → 在 chat 里给一段短设计 → <strong>STOP 等 yes</strong> → 直接实现（仍走 TDD）。</p>
+    <div class="artifact">Artifact：chat 里的短设计。<em>没有 spec 文件、没有 plan 文档</em>。</div>
+  </div>
+
+  <div class="path-card arch">
+    <span class="tag">Path C</span>
+    <h3>Architectural</h3>
+    <p><strong>新项目 / 新子系统 / 会改变接口拓扑。</strong></p>
+    <p>判据：仓库里<strong>没有</strong>既存的流程可以照着改。</p>
+    <p>做法：完整链路 —— 探context → 一次一问澄清 → 2-3 方案对比 → 分段呈现设计并逐段确认 → 写 spec 文件 → 用户 review spec → 交给 <span class="skill">writing-plans</span>。</p>
+    <div class="artifact">Artifact：<code>docs/superpowers/specs/YYYY-MM-DD-&lt;topic&gt;-design.md</code>。</div>
+  </div>
+</div>
+
+<h2 data-num="Ⅱ">决策的一刀切</h2>
+
+<p>问自己：<strong>「这条流程现在在这个 repo 里能读到吗？」</strong></p>
+
+<table>
+  <thead><tr><th>答案</th><th>路径</th></tr></thead>
+  <tbody>
+    <tr><td>不 —— 这是全新东西</td><td><strong>Architectural</strong></td></tr>
+    <tr><td>是 —— 只是加/修一小块</td><td><strong>Bounded</strong></td></tr>
+    <tr><td>不 —— 我只想验证一个"能不能"</td><td><strong>Spike</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <div class="callout-label">在两者之间犹豫时</div>
+  <p><strong>走重的那条。</strong> 伸手拿 "bounded" 这个标签来跳过工作，这个动作本身就是 doubt 的信号。</p>
+</div>
+
+<h2 data-num="Ⅲ">棘轮规则（Ratchet）</h2>
+
+<div class="callout">
+  <div class="callout-label">单向棘轮</div>
+  <p>任务中途发现隐藏复杂度 → <strong>升级路径</strong>（spike→bounded→architectural）。停下来，说出来。</p>
+  <p><strong>没有任何情况允许降级。</strong>"快做完了不用重新分类" = 反模式。</p>
+</div>
+
+<h2 data-num="Ⅳ">HARD-GATE：批准 ≠ 一次授权全部</h2>
+
+<p><span class="skill">brainstorming</span> 的 <code>&lt;HARD-GATE&gt;</code> 定义："批准"只针对<strong>当前呈现出来的那一层</strong>：</p>
+
+<table>
+  <thead><tr><th>路径</th><th>闸门 = 谁的哪个批准</th></tr></thead>
+  <tbody>
+    <tr><td>Spike</td><td>人类 partner 批准 <em>问题 + probe 计划</em></td></tr>
+    <tr><td>Bounded</td><td>人类 partner 批准 <em>chat 里那段短设计</em>（呈现设计和开始动手必须分成两个消息）</td></tr>
+    <tr><td>Architectural</td><td>两级：<em>会话设计批准</em> → 才允许写 spec 文件 → <em>spec 文件批准</em> → 才允许调用 <span class="skill">writing-plans</span></td></tr>
+  </tbody>
+</table>
+
+<div class="callout warn">
+  <div class="callout-label">关键反模式</div>
+  <p>"I understand this kind of app, so it's bounded" —— <strong>错。</strong>Bounded 度量的是<em>仓库</em>，不是<em>你的熟悉度</em>。一个 todo app 你写过一百次也一样是 Architectural，因为这个 repo 里它还不存在。</p>
+</div>
+
+<h2 data-num="Ⅴ">Red Flags 对照表（一手翻自 SKILL.md）</h2>
+
+<table>
+  <thead><tr><th>脑中的念头</th><th>真相</th></tr></thead>
+  <tbody>
+    <tr><td>"太简单了不用设计"</td><td>按选中的路径走。Bounded 只要 chat 里两句话；Architectural 就要 spec 文件。</td></tr>
+    <tr><td>"我叫它 bounded 就能跳过 spec"</td><td>这个念头本身 = doubt → 走重的路径。</td></tr>
+    <tr><td>"设计明显，我边说他边看边写"</td><td>闸门是"批准"，不是"设计长度"。呈现后要 STOP。</td></tr>
+    <tr><td>"我熟这类 app，所以是 bounded"</td><td>Bounded 度量仓库，不度量熟悉度。</td></tr>
+    <tr><td>"spike 跑通了，代码留下吧"</td><td>Spike 的产物是答案。留代码是新需求 → 重新分类。</td></tr>
+    <tr><td>"它变复杂了但我快做完了"</td><td>中途升级 ≠ 重做，只 = 停下来重新走一次分类。</td></tr>
+    <tr><td>"他批准了 spike，那后续改动也算批了"</td><td>每个任务有自己的分类和自己的批准。</td></tr>
+  </tbody>
+</table>
+
+<h2 data-num="Ⅵ">终点状态（Terminal State）</h2>
+
+<table>
+  <thead><tr><th>路径</th><th>brainstorming 结束后唯一能调用的下一步</th></tr></thead>
+  <tbody>
+    <tr><td>Spike</td><td>报告 recommendation。<em>没有下一步。</em></td></tr>
+    <tr><td>Bounded</td><td>直接进入 normal dev workflow（TDD）——<strong>没有 plan 文档</strong>。</td></tr>
+    <tr><td>Architectural</td><td>唯一出口：<span class="skill">writing-plans</span>。<br>禁止直接叫 <span class="skill">frontend-design</span> / <span class="skill">mcp-builder</span> 等实现类 skill。</td></tr>
+  </tbody>
+</table>
+
+<footer class="course-foot">
+  <div class="next-steps">
+    <h4>Source of truth</h4>
+    <p>本表一切内容回溯至 <a href="https://raw.githubusercontent.com/obra/superpowers/main/skills/brainstorming/SKILL.md"><code>skills/brainstorming/SKILL.md</code> @ main</a>。当 SKILL.md 更新时，本表应同步修订。</p>
+  </div>
+</footer>
+
+</body>
+</html>

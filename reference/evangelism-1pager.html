@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>Reference · 团队布道 1-pager</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../assets/course.css">
+<style>
+  @media print {
+    body { padding: 0.6rem; max-width: none; font-size: 11pt; }
+    .a4-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .avoid-break { page-break-inside: avoid; }
+  }
+  .a4-grid { display: block; }
+  @media (min-width: 900px) { .a4-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; } }
+</style>
+</head>
+<body>
+
+<header class="course-head">
+  <div class="crumbs">
+    <a href="../lessons/0006-team-evangelism.html">Lesson 0006</a>
+    · Reference · 打印版
+  </div>
+  <h1>Superpowers · 团队布道 1-pager</h1>
+  <p class="subtitle">A4 双面打印版。培训当天贴在会议室 / 存到 team wiki / 附在会议邀请里。</p>
+</header>
+
+<div class="a4-grid">
+
+<div class="avoid-break">
+<h2 data-num="1">为什么要它</h2>
+<p>直接跟 AI 说"帮我做个 X"，最常见的 3 种翻车：</p>
+<ul>
+  <li>做出来了，但不是你要的 —— 因为需求没定完</li>
+  <li>看起来跑通了，一上线就炸 —— 因为测试没真跑</li>
+  <li>第二天想改一行 —— 因为没有人（包括 AI）能读懂昨天的实现</li>
+</ul>
+<p><strong>Superpowers 是一套把这些坑堵上的<em>流程</em></strong>，不是一个新工具。</p>
+</div>
+
+<div class="avoid-break">
+<h2 data-num="2">7 步流水线（白板版）</h2>
+<pre style="font-size:0.72rem; line-height:1.35;">
+ ① brainstorming   设计对话 → 三路分类
+ ② git-worktrees   隔离工作区 + 基线全绿
+ ③ writing-plans   2-5 分钟一步 · 无 TBD
+ ④ subagent / native 执行模式二选一
+    │
+    ├─ 每个 task：
+    │  ⑤ TDD (RED → GREEN → REFACTOR)
+    │  ⑥ requesting-code-review
+    │
+ ⑦ finishing-a-development-branch
+    merge / PR / keep · 人选
+</pre>
+<p><em>Step 5、6 是嵌套在 Step 4 里的循环 —— 不是最后补。</em></p>
+</div>
+
+<div class="avoid-break">
+<h2 data-num="3">三路分类 · 一句话判据</h2>
+<p>问自己：<strong>「这条流程现在在这个 repo 里能读到吗？」</strong></p>
+<ul>
+  <li><strong>能读到</strong> · 只是改 → <span style="color:var(--warn); font-weight:600;">Bounded</span>（chat 一段短设计 · STOP · 等 yes · 实现，<em>没有 spec 也没有 plan</em>）</li>
+  <li><strong>读不到</strong> · 只要答案 → <span style="color:var(--ok); font-weight:600;">Spike</span>（2-3 句说 probe · 跑一下 · 报告建议 · 代码扔掉）</li>
+  <li><strong>读不到</strong> · 要留下来 → <span style="color:var(--accent); font-weight:600;">Architectural</span>（完整对话 → 写 spec 文件 → review → 才叫 writing-plans）</li>
+</ul>
+<p><strong>Bounded 度量仓库，不度量任务大小，也不度量你熟不熟。</strong></p>
+</div>
+
+<div class="avoid-break">
+<h2 data-num="4">Plan 的 6 种失败 · 一眼识别</h2>
+<table style="font-size:0.85rem;">
+  <tbody>
+    <tr><td><strong>P1</strong></td><td><code>TBD</code> / <code>TODO</code> / <code>implement later</code></td></tr>
+    <tr><td><strong>P2</strong></td><td><code>appropriate</code> / <code>edge cases</code> / <code>as needed</code></td></tr>
+    <tr><td><strong>P3</strong></td><td>"Write tests for the above"（无 code block）</td></tr>
+    <tr><td><strong>P4</strong></td><td>"Similar to Task N"（executor 会乱序读）</td></tr>
+    <tr><td><strong>P5</strong></td><td>Code step 只说"做什么"不给代码</td></tr>
+    <tr><td><strong>P6</strong></td><td>引用了任何 task 都没 Produces 的符号</td></tr>
+  </tbody>
+</table>
+<p>命中任意一条 → plan 退回。<em>不用继续读</em>。</p>
+</div>
+
+<div class="avoid-break">
+<h2 data-num="5">Subagent 还是 Native</h2>
+<table style="font-size:0.85rem;">
+  <tbody>
+    <tr><td>Task ≥ 10</td><td>Sub</td></tr>
+    <tr><td>Task 间接口复杂</td><td>Sub</td></tr>
+    <tr><td>需要无人值守 2+ 小时</td><td>Sub</td></tr>
+    <tr><td>出错代价高（生产 · 迁移）</td><td>Sub</td></tr>
+    <tr><td>Token 预算紧张</td><td>Nat</td></tr>
+    <tr><td>Task ≤ 5 · 独立 · 设计已定</td><td>Nat</td></tr>
+    <tr><td>快速 spike 探索方向</td><td>Nat</td></tr>
+  </tbody>
+</table>
+<p><strong>Subagent 不是更高级，是更贵。</strong>它用 2× token 换"接口契约"和"上下文不污染"。</p>
+</div>
+
+<div class="avoid-break">
+<h2 data-num="6">Verification Iron Law</h2>
+<div class="callout" style="margin: 0.5rem 0; padding: 0.6rem 0.9rem;">
+  <p style="font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; margin: 0;">NO COMPLETION CLAIMS<br>WITHOUT FRESH VERIFICATION EVIDENCE</p>
+</div>
+<p>三句实操：</p>
+<ul>
+  <li>说 "should / probably / 看起来 / 应该 ok" = 红旗 = 还没跑</li>
+  <li>AI 报告 "test pass" 不算证据，看 diff + 本地跑一次</li>
+  <li>回归测试要<em>双向</em>验证：通过 → revert 修复 → 必须 fail → restore → 通过</li>
+</ul>
+<p>PR review 只问一句：<em>「最后一条 commit 之后跑过测试吗？贴一下输出。」</em></p>
+</div>
+
+<div class="avoid-break">
+<h2 data-num="7">常见抵触 · 应答</h2>
+<table style="font-size:0.82rem;">
+  <tbody>
+    <tr><td>"这么小的活也要走完整流程？"</td><td>三路分类。看 repo 不看大小。</td></tr>
+    <tr><td>"我 prompt 已经写得很清楚了。"</td><td>扫 P1-P6 里的 4 个词组，你就知道有没有真清楚。</td></tr>
+    <tr><td>"AI 说完成了就完成呗。"</td><td>Iron Law：没跑过的绿灯 = 假绿灯。</td></tr>
+    <tr><td>"这太啰嗦了，效率低。"</td><td>前 30 分钟慢，之后 subagent 无人值守跑 2 小时。<em>琐碎改动就别用。</em></td></tr>
+    <tr><td>"Subagent 听着高级，都开它。"</td><td>反过来 —— 它更贵不是更高级。小 plan + 预算紧 = native。</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="avoid-break">
+<h2 data-num="8">最小行动</h2>
+<p>试用一周。规则只有一条：</p>
+<div class="callout ok" style="margin: 0.6rem 0; padding: 0.7rem 1rem;">
+  <p style="margin: 0;"><strong>下次让 AI 帮你写代码前</strong> · 先跑一句：<br>
+  <code>让我们做一个 ...</code><br>
+  看 agent 是不是<em>没直接开始写</em> · 反而问你问题、要求分类。</p>
+</div>
+<p>那一瞬间你会明白 superpowers 到底在做什么 —— 剩下的 6 步之后再说。</p>
+</div>
+
+</div>
+
+<footer class="course-foot">
+  <div class="next-steps">
+    <h4>Source of truth</h4>
+    <p>本 1-pager 所有主张都可在 <a href="https://github.com/obra/superpowers">obra/superpowers</a> 各 SKILL.md 中找到一手定义。冲突以 SKILL.md 为准。</p>
+    <h4 style="margin-top:1rem">使用说明</h4>
+    <p>A4 双面打印 · 会议室张贴 · 会议邀请附件 · 团队 wiki 首页。所有链接在本课程网站内可访问。</p>
+  </div>
+</footer>
+
+</body>
+</html>
